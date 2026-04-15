@@ -11,10 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('proveedores', function (Blueprint $table) {
-            $table->dropForeign(['user_id']); // eliminar FK si existe
-            $table->dropColumn('user_id');    // eliminar columna
-        });
+        if (Schema::hasColumn('proveedores', 'user_id')) {
+            Schema::table('proveedores', function (Blueprint $table) {
+                try {
+                    $table->dropForeign(['user_id']);
+                } catch (\Exception $e) {
+                    // FK may not exist
+                }
+                $table->dropColumn('user_id');
+            });
+        }
     }
 
     /**
