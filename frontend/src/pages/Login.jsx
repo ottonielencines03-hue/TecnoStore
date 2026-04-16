@@ -93,12 +93,26 @@ const Login = () => {
         const message = err.response.data.message || "";
         const validationErrors = err.response.data.errors || {};
 
-        if (err.response.status === 422 && validationErrors.email) {
-          setErrors({ email: isLogin ? "El correo no existe" : "El correo ya está registrado" });
-        } else if (message.toLowerCase().includes("email") || message.toLowerCase().includes("correo")) {
-          setErrors({ email: isLogin ? "El correo no existe" : "El correo ya está registrado" });
-        } else if (message.toLowerCase().includes("password") || message.toLowerCase().includes("contraseña")) {
-          setErrors({ password: "Contraseña incorrecta" });
+        if (err.response.status === 422 && Object.keys(validationErrors).length > 0) {
+          // Map all validation errors to the state
+          const newErrors = {};
+          for (const key in validationErrors) {
+            newErrors[key] = validationErrors[key][0]; // Toma el primer mensaje de error para el campo
+          }
+          setErrors(newErrors);
+          
+          setToastMessage("Por favor corrige los errores del formulario");
+          setShowToast(true);
+        } else if (err.response.status === 401 || err.response.status === 404) {
+          // Manejo de errores específicos de login (no encontrado o pass incorrecta)
+          if (message.toLowerCase().includes("no encontrado")) {
+            setErrors({ email: message });
+          } else if (message.toLowerCase().includes("incorrecta")) {
+            setErrors({ password: message });
+          } else {
+            setToastMessage(message);
+            setShowToast(true);
+          }
         } else {
           setToastMessage(message || "Error al procesar la solicitud");
           setShowToast(true);
@@ -215,7 +229,8 @@ const Login = () => {
                 {!isLogin && (
                   <div className="lg-field">
                     <label className="lg-label">Nombre</label>
-                    <input className="lg-input" type="text" name="name" placeholder="Tu nombre completo" onChange={handleChange} required />
+                    <input className={`lg-input ${errors.name ? "err" : ""}`} type="text" name="name" placeholder="Tu nombre completo" onChange={handleChange} required />
+                    {errors.name && <span className="lg-error-msg">⚠ {errors.name}</span>}
                   </div>
                 )}
 
@@ -250,15 +265,18 @@ const Login = () => {
                     <div className="lg-divider" />
                     <div className="lg-field">
                       <label className="lg-label">Empresa</label>
-                      <input className="lg-input" type="text" name="empresa" placeholder="Nombre de tu empresa" onChange={handleChange} required />
+                      <input className={`lg-input ${errors.empresa ? "err" : ""}`} type="text" name="empresa" placeholder="Nombre de tu empresa" onChange={handleChange} required />
+                      {errors.empresa && <span className="lg-error-msg">⚠ {errors.empresa}</span>}
                     </div>
                     <div className="lg-field">
                       <label className="lg-label">Teléfono</label>
-                      <input className="lg-input" type="text" name="telefono" placeholder="+52 000 000 0000" onChange={handleChange} required />
+                      <input className={`lg-input ${errors.telefono ? "err" : ""}`} type="text" name="telefono" placeholder="+52 000 000 0000" onChange={handleChange} required />
+                      {errors.telefono && <span className="lg-error-msg">⚠ {errors.telefono}</span>}
                     </div>
                     <div className="lg-field">
                       <label className="lg-label">Dirección</label>
-                      <input className="lg-input" type="text" name="direccion" placeholder="Ciudad, Estado" onChange={handleChange} required />
+                      <input className={`lg-input ${errors.direccion ? "err" : ""}`} type="text" name="direccion" placeholder="Ciudad, Estado" onChange={handleChange} />
+                      {errors.direccion && <span className="lg-error-msg">⚠ {errors.direccion}</span>}
                     </div>
                   </div>
                 )}
