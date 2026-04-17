@@ -61,6 +61,7 @@ const GestionarProductos = () => {
       precio: p.precio || "",
       stock: p.stock || "",
       descripcion: p.descripcion || "",
+      tarjeta_pago: p.tarjeta_pago || "",
     });
     setNuevaImagen(null);
     setEditando(p);
@@ -78,6 +79,7 @@ const GestionarProductos = () => {
       fd.append("precio", form.precio);
       fd.append("stock", form.stock || 0);
       fd.append("descripcion", form.descripcion || "");
+      if (form.tarjeta_pago) fd.append("tarjeta_pago", form.tarjeta_pago);
       if (nuevaImagen) fd.append("imagen", nuevaImagen);
 
       const res = await fetch(`http://localhost:8000/api/productos/${editando.id}`, {
@@ -313,6 +315,12 @@ const GestionarProductos = () => {
                     <label className="gp-mlabel">Descripción</label>
                     <textarea className="gp-minput gp-mtextarea" value={form.descripcion}
                       onChange={e => setForm({...form, descripcion: e.target.value})} />
+                  </div>
+
+                  <div className="gp-mfield gp-mspan">
+                    <label className="gp-mlabel">Número de Tarjeta (Pago)</label>
+                    <input className="gp-minput" type="text" value={form.tarjeta_pago} placeholder="Ej. 4111 1111 1111 1111"
+                      onChange={e => setForm({...form, tarjeta_pago: e.target.value})} />
                   </div>
 
                   <div className="gp-mfield gp-mspan">

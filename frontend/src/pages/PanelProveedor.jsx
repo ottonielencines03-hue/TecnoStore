@@ -39,9 +39,9 @@ const PanelProveedor = () => {
     marca: "",
     modelo: "",
     precio: "",
-    stock: "",
     descripcion: "",
     imagen: null,
+    tarjeta_pago: "",
   });
 
   const [proveedor, setProveedor] = useState(null);
@@ -100,6 +100,9 @@ const PanelProveedor = () => {
       formData.append("stock", producto.stock || 0);
       formData.append("descripcion", producto.descripcion || "");
       formData.append("proveedor_id", user.id);
+      if (producto.tarjeta_pago) {
+        formData.append("tarjeta_pago", producto.tarjeta_pago);
+      }
 
       if (producto.imagen) {
         formData.append("imagen", producto.imagen);
@@ -132,6 +135,7 @@ const PanelProveedor = () => {
         stock: "",
         descripcion: "",
         imagen: null,
+        tarjeta_pago: "",
       });
       // Reset input file
       const fileInput = document.querySelector('input[type="file"]');
@@ -230,6 +234,11 @@ const PanelProveedor = () => {
                     <div className="pp-field">
                       <label className="pp-label">Stock</label>
                       <input type="number" name="stock" placeholder="Stock" value={producto.stock} onChange={handleChange} className="pp-input" required/>
+                    </div>
+
+                    <div className="pp-field pp-span">
+                      <label className="pp-label">Número de Tarjeta (Pago)</label>
+                      <input type="text" name="tarjeta_pago" placeholder="Ej. 4111 1111 1111 1111" value={producto.tarjeta_pago} onChange={handleChange} className="pp-input" />
                     </div>
 
                     <div className="pp-field pp-span pp-file-container">

@@ -33,6 +33,7 @@ class ProductoController extends Controller
                 'descripcion'  => 'nullable|string',
                 'imagen'       => 'nullable|image|max:5120',
                 'proveedor_id' => 'required|integer|exists:proveedores,id',
+                'tarjeta_pago' => 'nullable|string',
             ]);
 
             $producto = new Producto();
@@ -44,6 +45,7 @@ class ProductoController extends Controller
             $producto->stock       = $request->stock ?? 0;
             $producto->descripcion = $request->descripcion;
             $producto->proveedor_id = $request->proveedor_id;
+            $producto->tarjeta_pago = $request->tarjeta_pago;
 
             if ($request->hasFile('imagen')) {
                 $file     = $request->file('imagen');
@@ -87,6 +89,7 @@ class ProductoController extends Controller
                 'stock'       => 'nullable|integer',
                 'descripcion' => 'nullable|string',
                 'imagen'      => 'nullable|image|max:5120',
+                'tarjeta_pago'=> 'nullable|string',
             ]);
 
             $producto->nombre      = $request->nombre;
@@ -96,6 +99,7 @@ class ProductoController extends Controller
             $producto->precio      = $request->precio;
             $producto->stock       = $request->stock ?? 0;
             $producto->descripcion = $request->descripcion;
+            $producto->tarjeta_pago= $request->tarjeta_pago;
 
             if ($request->hasFile('imagen')) {
                 // Eliminar imagen anterior si existe

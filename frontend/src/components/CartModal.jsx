@@ -6,11 +6,13 @@ import {
   imageOutline, chevronForwardOutline
 } from 'ionicons/icons';
 import { useCart } from '../context/CartContext';
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import './CartModal.css';
 
 const CartModal = ({ isOpen, onDismiss, onRequireAuth }) => {
   const { cart, removeFromCart, updateQuantity, cartTotal, cartItemCount, clearCart } = useCart();
   const [removingId, setRemovingId] = useState(null);
+  const [showPaypal, setShowPaypal] = useState(false);
   const overlayRef = useRef(null);
 
   const handleOverlayClick = (e) => {
@@ -172,18 +174,41 @@ const CartModal = ({ isOpen, onDismiss, onRequireAuth }) => {
               </div>
             </div>
 
-            <button 
-              className="cm-checkout-btn" 
-              onClick={() => {
-                if (onRequireAuth && !onRequireAuth()) {
-                  onDismiss(); // Cierra el carrito para que vea el modal de login
-                  return;
-                }
-                // future checkout router logic
-              }}>
-              <span>Proceder al pago</span>
-              <IonIcon icon={chevronForwardOutline} />
-            </button>
+            {!showPaypal ? (
+              <button 
+                className="cm-checkout-btn" 
+                onClick={() => {
+                  if (onRequireAuth && !onRequireAuth()) {
+                    onDismiss(); // Cierra el carrito para que vea el modal de login
+                    return;
+                  }
+                  setShowPaypal(true);
+                }}>
+                <span>Proceder al pago con PayPal</span>
+                <IonIcon icon={chevronForwardOutline} />
+              </button>
+            ) : (
+              <div style={{ marginTop: '16px', position: 'relative', zIndex: 1, minHeight: '150px' }}>
+                <PayPalScriptProvider options={{ "client-id": "test", currency: "MXN" }}>
+                  <PayPalButtons 
+                    createOrder={(data, actions) => {
+                      return actions.order.create({
+                        purchase_units: [{
+                          amount: { value: cartTotal.toString() }
+                        }]
+                      });
+                    }}
+                    onApprove={(data, actions) => {
+                      return actions.order.capture().then((details) => {
+                        clearCart();
+                        onDismiss();
+                        setTimeout(() => alert("¡Pago procesado correctamente!"), 300);
+                      });
+                    }}
+                  />
+                </PayPalScriptProvider>
+              </div>
+            )}
 
             <button className="cm-clear-btn" onClick={clearCart}>
               <IonIcon icon={trashOutline} style={{ fontSize: 14 }} />
