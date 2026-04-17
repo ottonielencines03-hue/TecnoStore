@@ -154,7 +154,7 @@ const GestionarProductos = () => {
                   <p className="gp-hsub">Edita o elimina tus productos publicados</p>
                 </div>
               </div>
-              <button className="gp-backbtn" onClick={() => router.push('/proveedor', 'back', 'replace')}>
+              <button className="gp-backbtn" onClick={() => router.push('/proveedor')}>
                 <IonIcon icon={arrowBackOutline} style={{ marginRight: '6px' }} />
                 Volver al panel
               </button>
@@ -196,7 +196,7 @@ const GestionarProductos = () => {
                     {busqueda ? "Sin resultados para tu búsqueda" : "Aún no tienes productos publicados"}
                   </p>
                   <button
-                    onClick={() => router.push('/proveedor', 'back', 'replace')}
+                    onClick={() => router.push('/proveedor')}
                     className="gp-btn-primary"
                   >
                     Publicar primer producto

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\StatsController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -24,3 +25,15 @@ Route::post('/productos', [ProductoController::class, 'store']);
 Route::get('/productos/proveedor/{proveedor_id}', [ProductoController::class, 'byProveedor']);
 Route::post('/productos/{id}', [ProductoController::class, 'update']);
 Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
+
+// Stats
+Route::get('/stats', [StatsController::class, 'getStats']);
+Route::get('/stats/proveedor/{id}', [StatsController::class, 'getProviderStats']);
+
+// Carrito
+use App\Http\Controllers\CarritoController;
+Route::get('/carrito/{user_id}', [CarritoController::class, 'index']);
+Route::post('/carrito', [CarritoController::class, 'store']);
+Route::put('/carrito/{user_id}/{producto_id}', [CarritoController::class, 'update']);
+Route::delete('/carrito/{user_id}/{producto_id}', [CarritoController::class, 'destroy']);
+Route::delete('/carrito/{user_id}', [CarritoController::class, 'clear']);

@@ -1,66 +1,151 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { checkmarkCircleOutline, alertCircleOutline, trashOutline, bagHandleOutline, callOutline, chatbubblesOutline } from 'ionicons/icons';
+import { IonIcon } from '@ionic/react';
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState(() => {
+  const [cart, setCart] = useState([]);
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')));
+  const [toast, setToast] = useState(null);
+
+  const showToast = useCallback((message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000); // Duración de 3 segundos
+  }, []);
+
+  // Cargar carrito desde la base de datos si el usuario está logueado
+  const fetchCart = useCallback(async (userId) => {
     try {
-      const user = window.localStorage.getItem('user');
-      // Si no hay usuario logueado, forzamos un carrito vacío y limpiamos datos residuales
-      if (!user) {
-        window.localStorage.removeItem('tecnostore_cart');
-        return [];
+      const response = await fetch(`http://localhost:8000/api/carrito/${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setCart(data);
       }
-      
-      const item = window.localStorage.getItem('tecnostore_cart');
-      return item ? JSON.parse(item) : [];
     } catch (error) {
-      console.warn('Error reading localStorage for cart', error);
-      return [];
+      console.error('Error fetching cart from DB:', error);
     }
-  });
+  }, []);
 
+  // Escuchar cambios en el localStorage para el usuario (login/logout)
   useEffect(() => {
-    window.localStorage.setItem('tecnostore_cart', JSON.stringify(cart));
-  }, [cart]);
+    const handleStorageChange = () => {
+      const currentUser = JSON.parse(localStorage.getItem('user'));
+      setUser(currentUser);
+    };
 
-  const addToCart = (producto) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find(item => item.id === producto.id);
-      if (existingItem) {
-        return prevCart.map(item => 
-          item.id === producto.id 
-            ? { ...item, cantidad: item.cantidad + 1 } 
-            : item
-        );
+    window.addEventListener('storage', handleStorageChange);
+    // Verificar cada vez que el componente se monta o el usuario cambia localmente
+    const checkUser = setInterval(() => {
+      const currentUser = JSON.parse(localStorage.getItem('user'));
+      if (JSON.stringify(currentUser) !== JSON.stringify(user)) {
+        setUser(currentUser);
       }
-      // Agregar nuevo producto con cantidad 1
-      return [...prevCart, { ...producto, cantidad: 1 }];
-    });
-  };
+    }, 1000);
 
-  const removeFromCart = (id) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== id));
-  };
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(checkUser);
+    };
+  }, [user]);
 
-  const updateQuantity = (id, amount) => {
-    setCart(prevCart => prevCart.map(item => {
-      if (item.id === id) {
-        const newQty = item.cantidad + amount;
-        return { ...item, cantidad: newQty > 0 ? newQty : 1 }; // Minimo 1
+  // Si hay usuario, cargar su carrito de la DB
+  useEffect(() => {
+    if (user && user.id && !user.empresa) { // Solo para clientes
+      fetchCart(user.id);
+    } else {
+      setCart([]);
+    }
+  }, [user, fetchCart]);
+
+  const addToCart = async (producto) => {
+    if (!user) {
+      return { success: false, message: 'Debes iniciar sesión para comprar.' };
+    }
+
+    try {
+      const response = await fetch('http://localhost:8000/api/carrito', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id,
+          producto_id: producto.id,
+          cantidad: 1
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        await fetchCart(user.id); // Recargar carrito desde DB
+        return { success: true, message: 'Producto añadido correctamente.' };
+      } else {
+        return { success: false, message: data.message || 'Error al añadir al carrito.' };
       }
-      return item;
-    }));
+    } catch (error) {
+      return { success: false, message: 'Error de conexión con el servidor.' };
+    }
   };
 
-  const clearCart = () => {
-    setCart([]);
+  const removeFromCart = async (productoId) => {
+    if (!user) return;
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/carrito/${user.id}/${productoId}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        fetchCart(user.id);
+      }
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+    }
   };
 
-  // Calcular el total de productos en el carrito
+  const updateQuantity = async (productoId, amount) => {
+    if (!user) return;
+
+    const currentItem = cart.find(item => item.id === productoId);
+    if (!currentItem) return;
+
+    const nuevaCantidad = currentItem.cantidad + amount;
+    if (nuevaCantidad < 1) return;
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/carrito/${user.id}/${productoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cantidad: nuevaCantidad })
+      });
+
+      if (response.ok) {
+        fetchCart(user.id);
+        return { success: true };
+      } else {
+        const data = await response.json();
+        return { success: false, message: data.message };
+      }
+    } catch (error) {
+      return { success: false, message: 'Error de red' };
+    }
+  };
+
+  const clearCart = async () => {
+    if (!user) return;
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/carrito/${user.id}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        setCart([]);
+      }
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+    }
+  };
+
   const cartItemCount = cart.reduce((total, item) => total + item.cantidad, 0);
-
-  // Calcular el precio subtotal total
   const cartTotal = cart.reduce((total, item) => total + (Number(item.precio) * item.cantidad), 0);
 
   return (
@@ -71,7 +156,8 @@ export const CartProvider = ({ children }) => {
       updateQuantity,
       clearCart,
       cartItemCount,
-      cartTotal
+      cartTotal,
+      refreshCart: () => user && fetchCart(user.id)
     }}>
       {children}
     </CartContext.Provider>

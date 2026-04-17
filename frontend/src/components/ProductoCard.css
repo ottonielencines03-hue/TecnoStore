@@ -693,3 +693,280 @@
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(43, 108, 176, 0.4);
 }
+/* Footer Actions Layout */
+.pc-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pc-add-btn-full {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: none;
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pc-add-btn-full:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  filter: brightness(1.1);
+}
+
+.pc-add-btn-full:active {
+  transform: scale(0.95);
+}
+
+.pc-add-btn-full i, .pc-add-btn-full ion-icon {
+  font-size: 16px;
+}
+
+@media (max-width: 400px) {
+  .pc-add-btn-full span { display: none; }
+  .pc-add-btn-full { padding: 0 12px; }
+}
+
+/* Modern Modal Improvements */
+.pc-modal-header-meta { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+
+.pc-modal-stock {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.pc-modal-stock.in-stock { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.pc-modal-stock.out-of-stock { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+.stock-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+.pc-modal-price-tag {
+  display: flex; align-items: baseline; gap: 4px; margin-bottom: 20px;
+  color: #fff;
+}
+.pc-modal-currency { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.4); }
+.pc-modal-amount { font-size: 32px; font-weight: 800; }
+
+.pc-modal-desc-wrap { margin-bottom: 24px; }
+.pc-modal-desc-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(148, 163, 184, 0.6);
+  margin-bottom: 8px; letter-spacing: 0.1em;
+}
+
+.pc-cta-btn.primary {
+  position: relative; overflow: hidden; padding: 5px 5px 5px 20px;
+  justify-content: space-between; height: 52px;
+}
+.pc-cta-btn.primary.disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+
+.cta-icon-wrap {
+  width: 42px; height: 42px; border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center;
+  font-size: 20px; transition: transform 0.3s;
+}
+.pc-cta-btn.primary:hover .cta-icon-wrap { transform: rotate(15deg) scale(1.1); }
+
+
+/* Premium Modal Image & UI Decor */
+.pc-modal-img-tag {
+  width: 100%; height: 100%; object-fit: contain !important;
+  padding: 20px; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pc-modal-img:hover .pc-modal-img-tag { transform: scale(1.08) translateY(-5px); }
+
+.pc-modal-img-overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(10, 15, 28, 0.4) 100%);
+  pointer-events: none;
+}
+
+.pc-category-pill {
+  position: absolute; bottom: 16px; left: 20px;
+  padding: 6px 14px; border-radius: 12px;
+  color: white; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  border: 1px solid; backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.pc-modal-close-glass {
+  position: absolute; top: 16px; right: 16px;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; cursor: pointer; backdrop-filter: blur(12px);
+  transition: all 0.3s; z-index: 10;
+}
+.pc-modal-close-glass:hover { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); transform: rotate(90deg); }
+
+
+/* Modal Visual Tweaks */
+.pc-modal-img {
+  height: 340px !important;
+}
+
+.pc-modal-img-tag {
+  padding: 0 !important;
+  object-fit: cover !important;
+}
+
+.pc-cta-btn.primary {
+  justify-content: center !important;
+  gap: 16px !important;
+  padding: 0 24px !important;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4) !important;
+}
+
+.cta-icon-wrap {
+  background: rgba(255, 255, 255, 0.15) !important;
+  margin-left: 0 !important;
+  width: 38px !important;
+  height: 38px !important;
+}
+
+.pc-modal-content {
+  padding-top: 28px !important;
+}
+
+/* Scroll Fix & Layout Adjustments */
+.pc-modal-box {
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+}
+
+.pc-modal-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.pc-modal-box::-webkit-scrollbar-thumb {
+  background-color: rgba(59, 130, 246, 0.5);
+  border-radius: 10px;
+}
+
+.pc-modal-actions {
+  position: sticky;
+  bottom: 0;
+  background: #0a0f1c;
+  padding: 16px 22px 26px;
+  margin: 0 -22px -26px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  z-index: 20;
+}
+
+/* Ensure image doesn't break aspect ratio on small screens */
+.pc-modal-img {
+  flex-shrink: 0;
+  min-height: 340px;
+}
+
+/* Compact Modal for No-Scroll Layout */
+.pc-modal-box {
+  max-height: 95vh !important;
+  overflow: hidden !important;
+}
+
+.pc-modal-img {
+  height: 260px !important;
+  min-height: unset !important;
+}
+
+.pc-modal-content {
+  padding: 16px 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+.pc-modal-header-meta { margin-bottom: 0 !important; }
+
+.pc-modal-name {
+  font-size: 18px !important;
+  margin-bottom: 0 !important;
+}
+
+.pc-modal-price-tag {
+  margin-bottom: 8px !important;
+}
+.pc-modal-amount { font-size: 24px !important; }
+
+.pc-modal-desc-wrap {
+  margin-bottom: 8px !important;
+}
+.pc-modal-desc {
+  font-size: 13px !important;
+  margin-bottom: 0 !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pc-modal-prov {
+  padding: 10px !important;
+  margin-bottom: 10px !important;
+}
+.pc-modal-prov-header { margin-bottom: 8px !important; }
+.pc-modal-prov-avatar { width: 32px !important; height: 32px !important; font-size: 14px !important; }
+.pc-modal-prov-grid { gap: 6px !important; }
+.pc-chip { padding: 6px 10px !important; }
+
+.pc-modal-actions {
+  position: relative !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  backdrop-filter: none !important;
+}
+.pc-cta-btn.primary { height: 46px !important; }
+
+/* Compact Provider Contact Styles */
+.pc-modal-img {
+  height: 240px !important;
+}
+
+.pc-modal-prov-contact-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.pc-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(148, 163, 184, 0.8);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pc-contact-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pc-contact-item ion-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}

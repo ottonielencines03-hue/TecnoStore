@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { IonContent, IonPage, IonIcon, useIonRouter } from '@ionic/react';
+import { IonContent, IonPage, IonIcon, useIonRouter, useIonAlert } from '@ionic/react';
+import { useCart } from '../context/CartContext';
 import {
   flashOutline,
   shieldCheckmarkOutline,
@@ -51,25 +52,72 @@ const Counter = ({ to, suffix = "" }) => {
 };
 
 /* Product Card */
-const PCard = ({ p }) => {
+const PCard = ({ p, idx, user, onRequireAuth }) => {
   const [added, setAdded] = useState(false);
+  const { addToCart } = useCart();
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        setIsVisible(true);
+        obs.disconnect();
+      }
+    }, { threshold: 0.1 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
+  const price = Number(p.precio || 0).toLocaleString("es-MX", {
+    style: "currency",
+    currency: "MXN",
+    minimumFractionDigits: 0,
+  });
+
   return (
-    <div className="ld-pcard">
+    <div 
+      className={`ld-pcard ${isVisible ? 'reveal' : ''}`} 
+      ref={ref}
+      style={{ transitionDelay: `${idx * 0.1}s` }}
+    >
       <div className="ld-pcard-img">
-        <img src={p.img} alt={p.name} loading="lazy" />
+        {p.imagen ? (
+          <img src={`http://localhost:8000/productos/${p.imagen}`} alt={p.nombre} loading="lazy" />
+        ) : (
+          <div className="ld-pcard-placeholder">
+            <IonIcon icon={flashOutline} />
+          </div>
+        )}
         <div className="ld-pcard-img-overlay" />
-        <span className="ld-pcard-badge" style={{ background: `${p.badgeColor}22`, border: `1px solid ${p.badgeColor}44`, color: p.badgeColor }}>
-          {p.badge}
-        </span>
+        {p.categoria && (
+          <span className="ld-pcard-badge">
+            {p.categoria}
+          </span>
+        )}
       </div>
       <div className="ld-pcard-body">
-        <p className="ld-pcard-cat">{p.cat}</p>
-        <p className="ld-pcard-name">{p.name}</p>
+        <p className="ld-pcard-cat">{p.marca || "Premium"}</p>
+        <p className="ld-pcard-name">{p.nombre}</p>
         <div className="ld-pcard-footer">
-          <span className="ld-pcard-price">{p.price}</span>
+          <span className="ld-pcard-price">{price}</span>
           <button
             className="ld-pcard-add"
-            onClick={() => { setAdded(true); setTimeout(() => setAdded(false), 700); }}
+            onClick={async (e) => { 
+                e.stopPropagation();
+                if (!user) {
+                  onRequireAuth();
+                  return;
+                }
+                const res = await addToCart(p);
+                if (res.success) {
+                  setAdded(true); 
+                  setTimeout(() => setAdded(false), 700); 
+                } else {
+                  // Podríamos usar un alert o toast aquí si falla por stock
+                  alert(res.message);
+                }
+              }}
           >
             <IonIcon icon={added ? checkmarkOutline : addOutline} style={{ fontSize: '18px' }} />
           </button>
@@ -82,15 +130,43 @@ const PCard = ({ p }) => {
 const Landing = () => {
   const router = useIonRouter();
   const [user, setUser] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [heroImg, setHeroImg] = useState(0);
+  const [stats, setStats] = useState({ products: 0, customers: 0, providers: 0, satisfaction: 99 });
+  const [realProducts, setRealProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const u = JSON.parse(localStorage.getItem("user"));
     if (u) setUser(u);
 
-    const t = setInterval(() => setHeroImg(i => (i + 1) % PRODUCTOS.length), 3500);
+    // Fetch stats
+    fetch("http://localhost:8000/api/stats")
+      .then(res => res.json())
+      .then(setStats)
+      .catch(console.error);
+
+    // Fetch real products
+    fetch("http://localhost:8000/api/productos")
+      .then(res => res.json())
+      .then(data => {
+        setRealProducts(data.slice(0, 8)); // Display first 8 products
+        // Extract unique categories
+        const cats = [...new Set(data.map(p => p.categoria))].filter(Boolean);
+        setCategories(cats.length > 0 ? cats : ["Computadoras", "Audio", "Visual", "Telefonos", "Gaming"]);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Error fetching products:", err);
+        setLoading(false);
+      });
+
+    const t = setInterval(() => {
+      setHeroImg(i => (realProducts.length > 0 ? (i + 1) % realProducts.length : 0));
+    }, 4500);
     return () => clearInterval(t);
-  }, []);
+  }, [realProducts.length]);
 
   const goToDashboard = () => {
     if (!user) return;
@@ -98,6 +174,9 @@ const Landing = () => {
     else router.push("/PantallaInicio");
   };
 
+  const handleRequireAuth = () => {
+    setShowAuthModal(true);
+  };
 
   return (
     <IonPage>
@@ -163,7 +242,12 @@ const Landing = () => {
               </div>
 
               <div className="ld-hero-stats">
-                {[{ to: 12400, s: "+", l: "Productos" }, { to: 8200, s: "+", l: "Clientes" }, { to: 340, s: "+", l: "Proveedores" }, { to: 99, s: "%", l: "Satisfacción" }].map(({ to, s, l }) => (
+                {[
+                  { to: stats.products, s: "+", l: "Productos" },
+                  { to: stats.customers, s: "+", l: "Clientes" },
+                  { to: stats.providers, s: "+", l: "Proveedores" },
+                  { to: stats.satisfaction, s: "%", l: "Satisfacción" }
+                ].map(({ to, s, l }) => (
                   <div key={l} className="ld-stat-item">
                     <div className="ld-stat-num"><Counter to={to} suffix={s} /></div>
                     <div className="ld-stat-lbl">{l}</div>
@@ -176,14 +260,29 @@ const Landing = () => {
             <div className="ld-hero-right">
               <div className="ld-mockup-wrap">
                 <div className="ld-mockup">
-                  <img src={PRODUCTOS[heroImg].img} alt={PRODUCTOS[heroImg].name} key={heroImg} className="ld-mockup-img" />
-                  <div className="ld-mockup-bar">
-                    <div>
-                      <div className="ld-mockup-tag">{PRODUCTOS[heroImg].cat}</div>
-                      <div className="ld-mockup-name">{PRODUCTOS[heroImg].name}</div>
+                  {realProducts.length > 0 ? (
+                    <>
+                      <img 
+                        src={`http://localhost:8000/productos/${realProducts[heroImg].imagen}`} 
+                        alt={realProducts[heroImg].nombre} 
+                        key={heroImg} 
+                        className="ld-mockup-img" 
+                      />
+                      <div className="ld-mockup-bar">
+                        <div>
+                          <div className="ld-mockup-tag">{realProducts[heroImg].categoria}</div>
+                          <div className="ld-mockup-name">{realProducts[heroImg].nombre}</div>
+                        </div>
+                        <div className="ld-mockup-price">
+                          {Number(realProducts[heroImg].precio).toLocaleString("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 })}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="ld-mockup-loading">
+                      <IonIcon icon={flashOutline} className="ld-loading-pulse" />
                     </div>
-                    <div className="ld-mockup-price">{PRODUCTOS[heroImg].price}</div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="ld-chip ld-chip-1">
@@ -201,7 +300,7 @@ const Landing = () => {
           {/* MARQUEE */}
           <div className="ld-marquee-section">
             <div className="ld-marquee-track">
-              {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+              {[...categories, ...categories, ...categories].map((item, i) => (
                 <div key={i} className="ld-marquee-item">
                   {item}<span className="ld-marquee-sep" />
                 </div>
@@ -214,7 +313,21 @@ const Landing = () => {
             <p className="ld-section-eyebrow">Catálogo destacado</p>
             <h2 className="ld-section-title">Productos <em>premium</em><br />al mejor precio</h2>
             <div className="ld-prods-grid">
-              {PRODUCTOS.map((p) => <PCard key={p.id} p={p} />)}
+              {loading ? (
+                Array(4).fill(0).map((_, i) => (
+                  <div key={i} className="ld-pcard-skeleton" />
+                ))
+              ) : (
+                realProducts.map((p, idx) => (
+                  <PCard 
+                    key={p.id} 
+                    p={p} 
+                    idx={idx} 
+                    user={user} 
+                    onRequireAuth={handleRequireAuth} 
+                  />
+                ))
+              )}
             </div>
             <div style={{ textAlign: "center", marginTop: 48 }}>
               <button className="ld-btn-ghost" onClick={() => router.push("/productos")}>
@@ -258,6 +371,39 @@ const Landing = () => {
             </div>
             <p className="ld-footer-copy">© 2026 TecnoStore · Hecho en México 🇲🇽</p>
           </section>
+
+          {/* CUSTOM AUTH MODAL */}
+          {showAuthModal && (
+            <div className="ld-modal-overlay" onClick={() => setShowAuthModal(false)}>
+              <div className="ld-modal-box" onClick={e => e.stopPropagation()}>
+                <div className="ld-modal-glow" />
+                <button className="ld-modal-close-btn" onClick={() => setShowAuthModal(false)}>
+                  <IonIcon icon={checkmarkOutline} style={{ transform: 'rotate(45deg)' }} />
+                </button>
+                
+                <div className="ld-modal-icon-wrap">
+                  <div className="ld-modal-icon-ring" />
+                  <IonIcon icon={shieldCheckmarkOutline} className="ld-modal-icon" />
+                </div>
+                
+                <h2 className="ld-modal-title">Acceso Requerido</h2>
+                <p className="ld-modal-text">
+                  Para llevar la mejor tecnología a tu casa, necesitamos saber quién eres. 
+                  Inicia sesión como <strong>cliente</strong> para comenzar tu compra.
+                </p>
+                
+                <div className="ld-modal-actions">
+                  <button className="ld-modal-btn-primary" onClick={() => router.push('/login')}>
+                    Ir al inicio de sesión
+                    <IonIcon icon={flashOutline} />
+                  </button>
+                  <button className="ld-modal-btn-ghost" onClick={() => setShowAuthModal(false)}>
+                    Explorar un poco más
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </IonContent>
     </IonPage>

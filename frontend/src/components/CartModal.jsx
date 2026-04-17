@@ -136,7 +136,12 @@ const CartModal = ({ isOpen, onDismiss, onRequireAuth }) => {
                         <span className="cm-qty-value">{item.cantidad}</span>
                         <button
                           className="cm-qty-btn cm-qty-plus"
-                          onClick={() => updateQuantity(item.id, 1)}
+                          onClick={async () => {
+                            const res = await updateQuantity(item.id, 1);
+                            if (res && res.success === false) {
+                              alert(res.message);
+                            }
+                          }}
                           aria-label="Aumentar cantidad"
                         >
                           <IonIcon icon={addOutline} />

@@ -28,6 +28,11 @@ import {
   imageOutline
 } from 'ionicons/icons';
 import imageCompression from "browser-image-compression";
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  PieChart, Pie, Cell, LineChart, Line, AreaChart, Area
+} from 'recharts';
+import { TrendingUp, ShoppingBag, Layers, Activity } from 'lucide-react';
 import './PanelProveedor.css';
 
 const PanelProveedor = () => {
@@ -39,12 +44,21 @@ const PanelProveedor = () => {
     marca: "",
     modelo: "",
     precio: "",
+    stock: "",
     descripcion: "",
     imagen: null,
     tarjeta_pago: "",
   });
 
   const [proveedor, setProveedor] = useState(null);
+  const [stats, setStats] = useState({
+    total_products: 0,
+    total_stock: 0,
+    total_categories: 0,
+    category_distribution: [],
+    activity_data: []
+  });
+  const [loadingStats, setLoadingStats] = useState(true);
   
   // Ionic Overlay States
   const [popoverState, setPopoverState] = useState({ show: false, event: undefined });
@@ -61,6 +75,18 @@ const PanelProveedor = () => {
        return;
     }
     setProveedor(user);
+
+    // Fetch Stats
+    fetch(`http://localhost:8000/api/stats/proveedor/${user.id}`)
+      .then(res => res.json())
+      .then(data => {
+        setStats(data);
+        setLoadingStats(false);
+      })
+      .catch(err => {
+        console.error("Error fetching stats:", err);
+        setLoadingStats(false);
+      });
   }, [router]);
 
   const handleChange = async (e) => {
@@ -191,6 +217,7 @@ const PanelProveedor = () => {
 
           {/* MAIN */}
           <div className="pp-main">
+
             {/* FORMULARIO */}
             <form onSubmit={handleSubmit} encType="multipart/form-data" className="pp-form-container">
               <div className="pp-card pp-form-card">
@@ -298,29 +325,86 @@ const PanelProveedor = () => {
 
               {/* Stats */}
               <div className="pp-card pp-stats-card">
-                <p className="pp-sidebar-title">Resumen</p>
+                <p className="pp-sidebar-title">Análisis de Inventario</p>
+                
+                {/* Categorías Pie Chart */}
+                <div style={{ width: '100%', height: 180, marginBottom: '20px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={stats.category_distribution}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={45}
+                        outerRadius={70}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {stats.category_distribution.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={['#6366f1', '#a78bfa', '#818cf8', '#60a5fa'][index % 4]} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                        itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+
                 <div className="pp-stats-list">
                   <div className="pp-statcard">
                     <div className="pp-sticon st-blue"><IonIcon icon={cubeOutline} /></div>
                     <div>
                       <p className="pp-stlabel">Productos</p>
-                      <p className="pp-stval">—</p>
+                      <p className="pp-stval">{loadingStats ? '—' : stats.total_products}</p>
                     </div>
                   </div>
                   <div className="pp-statcard">
                     <div className="pp-sticon st-green"><IonIcon icon={cashOutline} /></div>
                     <div>
-                      <p className="pp-stlabel">Ventas hoy</p>
-                      <p className="pp-stval">—</p>
+                      <p className="pp-stlabel">Stock Total</p>
+                      <p className="pp-stval">{loadingStats ? '—' : stats.total_stock}</p>
                     </div>
                   </div>
                   <div className="pp-statcard">
                     <div className="pp-sticon st-orange"><IonIcon icon={layersOutline} /></div>
                     <div>
                       <p className="pp-stlabel">Categorías</p>
-                      <p className="pp-stval">—</p>
+                      <p className="pp-stval">{loadingStats ? '—' : stats.total_categories}</p>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* DASHBOARD CHARTS */}
+              <div className="pp-card pp-main-chart-card">
+                <div className="pp-cardhead">
+                  <div className="pp-cardicon"><IonIcon icon={cashOutline} /></div>
+                  <div>
+                    <p className="pp-cardtitle">Actividad Semanal</p>
+                    <p className="pp-cardsub">Vistas y pedidos</p>
+                  </div>
+                </div>
+                <div style={{ width: '100%', height: 200, padding: '12px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={stats.activity_data}>
+                      <defs>
+                        <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10}} dy={5} />
+                      <YAxis hide={true} />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', padding: '8px' }}
+                        itemStyle={{ fontSize: '11px' }}
+                      />
+                      <Area type="monotone" dataKey="ventas" stroke="#6366f1" strokeWidth={2} fillOpacity={1} fill="url(#colorSales)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { IonIcon, IonModal } from '@ionic/react';
-import { addOutline, checkmarkOutline, closeOutline, imageOutline, cartOutline, flashOutline } from 'ionicons/icons';
+import { addOutline, checkmarkOutline, closeOutline, imageOutline, cartOutline, flashOutline, callOutline, chatbubblesOutline } from 'ionicons/icons';
 import { useCart } from '../context/CartContext';
 import './ProductoCard.css';
 
@@ -36,18 +36,26 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
   const [c1, c2] = CAT_COLORS[producto.categoria] ?? ["#2b6cb0","#63b3ed"];
   const provIni = proveedor?.name?.charAt(0).toUpperCase() ?? "?";
 
-  const handleAdd = (e) => {
+  const handleAdd = async (e) => {
     e.stopPropagation();
     if (onRequireAuth && !onRequireAuth()) return;
-    addToCart(producto);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    const res = await addToCart(producto);
+    if (res.success) {
+      setAdded(true);
+      setTimeout(() => setAdded(false), 2000);
+    } else {
+      alert(res.message);
+    }
   };
 
-  const handleAddFromModal = () => {
+  const handleAddFromModal = async () => {
     if (onRequireAuth && !onRequireAuth()) return;
-    addToCart(producto);
-    setShowModal(false);
+    const res = await addToCart(producto);
+    if (res.success) {
+      setShowModal(false);
+    } else {
+      alert(res.message);
+    }
   };
 
   return (
@@ -85,18 +93,21 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
           <p className="pc-modelo">{producto.modelo}</p>
 
           <div className="pc-footer">
-            <div>
+            <div className="pc-price-wrap">
               <p className="pc-price-label">Precio</p>
               <p className="pc-price">{price}</p>
             </div>
 
-            <button
-              className="pc-add-btn-circle"
-              style={{ borderColor: `${c1}44`, background: `${c1}0f`, color: c1 }}
-              onClick={handleAdd}
-            >
-              <IonIcon icon={added ? checkmarkOutline : addOutline} style={{ fontSize: '18px' }} />
-            </button>
+            <div className="pc-footer-actions">
+              <button
+                className="pc-add-btn-full"
+                style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                onClick={handleAdd}
+              >
+                <IonIcon icon={added ? checkmarkOutline : cartOutline} />
+                <span>{added ? '¡Agregado!' : 'Añadir'}</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -121,74 +132,92 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
       </div>
 
       {/* MODAL - Product Detail */}
-      <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)} className="pc-detail-modal" initialBreakpoint={1} breakpoints={[0, 1]}>
+      <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)} className="pc-detail-modal">
         <div className="pc-modal-box">
           {/* Close handle */}
           <div className="pc-modal-handle" />
 
           {/* Imagen modal */}
-          <div className="pc-modal-img" style={{ background: `linear-gradient(145deg, ${c1}0d, ${c2}18)` }}>
+          <div className="pc-modal-img" style={{ background: `linear-gradient(145deg, ${c1}1a, ${c2}25)` }}>
             {producto.imagen && !imgError
-              ? <img src={`http://localhost:8000/productos/${producto.imagen}`} alt={producto.nombre} />
+              ? <img src={`http://localhost:8000/productos/${producto.imagen}`} alt={producto.nombre} className="pc-modal-img-tag" />
               : <div className="pc-modal-img-placeholder">
-                  <IonIcon icon={imageOutline} style={{ fontSize: '64px', color: c1, opacity: 0.18 }} />
+                  <IonIcon icon={imageOutline} style={{ fontSize: '72px', color: c1, opacity: 0.25 }} />
                 </div>
             }
-            <div className="pc-modal-img-gradient" />
+            <div className="pc-modal-img-overlay" />
+            <div className="pc-category-pill" style={{ background: `${c1}dd`, borderColor: `${c1}` }}>
+               {producto.categoria}
+            </div>
 
-            <button className="pc-modal-close" onClick={() => setShowModal(false)}>
-              <IonIcon icon={closeOutline} style={{ fontSize: '16px' }} />
+            <button className="pc-modal-close-glass" onClick={() => setShowModal(false)} aria-label="Cerrar detalle">
+              <IonIcon icon={closeOutline} />
             </button>
           </div>
 
           {/* Contenido modal */}
           <div className="pc-modal-content">
-            <p className="pc-modal-marca">
-              {producto.marca}
-              {producto.modelo && <span className="pc-modal-modelo"> · {producto.modelo}</span>}
-            </p>
+            <div className="pc-modal-header-meta">
+              <p className="pc-modal-marca">
+                {producto.marca}
+                {producto.modelo && <span className="pc-modal-modelo"> · {producto.modelo}</span>}
+              </p>
+              <div className={`pc-modal-stock ${producto.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                <div className="stock-dot" />
+                {producto.stock > 0 ? `${producto.stock} disponibles` : 'Agotado'}
+              </div>
+            </div>
+
             <h2 className="pc-modal-name">{producto.nombre}</h2>
-            <p className="pc-modal-price" style={{ backgroundImage: `linear-gradient(90deg, ${c1}, ${c2})` }}>
-              {price}
-            </p>
+            
+            <div className="pc-modal-price-tag">
+              <span className="pc-modal-currency">MXN</span>
+              <span className="pc-modal-amount">{Number(producto.precio).toLocaleString('es-MX', { minimumFractionDigits: 0 })}</span>
+            </div>
 
             {producto.descripcion && (
-              <p className="pc-modal-desc">{producto.descripcion}</p>
+              <div className="pc-modal-desc-wrap">
+                <p className="pc-modal-desc-label">Descripción</p>
+                <p className="pc-modal-desc">{producto.descripcion}</p>
+              </div>
             )}
 
             {/* Proveedor en modal */}
             <div className="pc-modal-prov">
-              <p className="pc-modal-prov-label">Proveedor</p>
-              {proveedor ? (
-                <>
-                  <div className="pc-modal-prov-header">
-                    <div className="pc-modal-prov-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-                      {provIni}
-                    </div>
-                    <div>
-                      <p className="pc-modal-prov-name">{proveedor.name}</p>
-                      <p className="pc-modal-prov-company">{proveedor.empresa}</p>
-                    </div>
-                  </div>
+              <div className="pc-modal-prov-header">
+                <div className="pc-modal-prov-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                  {provIni}
+                </div>
+                <div>
+                  <p className="pc-modal-prov-name">{proveedor ? proveedor.name : 'Cargando...'}</p>
+                  <p className="pc-modal-prov-company">{proveedor ? proveedor.empresa : ''}</p>
+                </div>
+              </div>
 
-                  <div className="pc-modal-prov-grid">
-                    {[["Email", proveedor.email], ["Teléfono", proveedor.telefono]].map(([lbl, val]) => (
-                      <div key={lbl} className="pc-chip">
-                        <p className="pc-chip-label">{lbl}</p>
-                        <p className="pc-chip-value">{val || "—"}</p>
-                      </div>
-                    ))}
+              {proveedor && (
+                <div className="pc-modal-prov-contact-row">
+                  <div className="pc-contact-item">
+                    <IonIcon icon={chatbubblesOutline} style={{ color: c1 }} />
+                    <span>{proveedor.email}</span>
                   </div>
-                </>
-              ) : (
-                <div className="pc-prov-loading"><span>Cargando proveedor...</span></div>
+                  <div className="pc-contact-item">
+                    <IonIcon icon={callOutline} style={{ color: c1 }} />
+                    <span>{proveedor.telefono}</span>
+                  </div>
+                </div>
               )}
             </div>
 
             <div className="pc-modal-actions">
-              <button className="pc-cta-btn primary" onClick={() => { handleAddFromModal(); /* Lógica de redirección a checkout en un futuro */ }}>
-                <IonIcon icon={flashOutline} style={{ fontSize: '18px' }} />
-                Comprar
+              <button 
+                className={`pc-cta-btn primary ${producto.stock <= 0 ? 'disabled' : ''}`}
+                onClick={() => { if(producto.stock > 0) handleAddFromModal(); }}
+                disabled={producto.stock <= 0}
+              >
+                <div className="cta-icon-wrap">
+                  <IonIcon icon={added ? checkmarkOutline : cartOutline} />
+                </div>
+                <span>{added ? '¡Agregado con éxito!' : (producto.stock > 0 ? 'Añadir al carrito' : 'Producto Agotado')}</span>
               </button>
             </div>
           </div>

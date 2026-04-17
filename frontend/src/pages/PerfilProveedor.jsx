@@ -29,10 +29,6 @@ const PerfilProveedor = () => {
     }
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    window.location.replace("/");
-  };
 
   if (!proveedor) {
     return (
@@ -121,19 +117,12 @@ const PerfilProveedor = () => {
               {/* BOTONES */}
               <div className="profile-actions">
                 <button
-                  onClick={() => router.push("/proveedor", "back", "replace")}
+                  onClick={() => router.push("/proveedor")}
                   className="profile-btn-primary"
+                  style={{ width: '100%' }}
                 >
                   <IonIcon icon={arrowBackOutline} style={{ marginRight: '8px' }} />
                   Volver al Panel
-                </button>
-
-                <button
-                  onClick={handleLogout}
-                  className="profile-btn-secondary"
-                >
-                  <IonIcon icon={logOutOutline} style={{ marginRight: '8px' }} />
-                  Cerrar sesión
                 </button>
               </div>
             </div>

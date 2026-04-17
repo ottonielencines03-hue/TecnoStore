@@ -128,10 +128,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(5, 8, 16, .7);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border-bottom: 1px solid rgba(255, 255, 255, .05);
+  background: rgba(5, 8, 16, .65);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
 @media (max-width: 768px) {
@@ -721,17 +722,30 @@
 
 /* Product Cards */
 .ld-pcard {
-  border-radius: 20px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, .03);
-  border: 1px solid rgba(255, 255, 255, .07);
-  transition: border-color .3s, transform .3s;
+  background: rgba(255, 255, 255, .02);
+  border: 1px solid rgba(255, 255, 255, .08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color .4s cubic-bezier(0.4, 0, 0.2, 1), 
+              transform .4s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow .4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.6s ease, filter 0.6s ease;
   cursor: pointer;
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+  filter: blur(10px);
+}
+
+.ld-pcard.reveal {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
 }
 
 .ld-pcard:hover {
-  border-color: rgba(59, 130, 246, .35);
-  transform: translateY(-6px);
+  border-color: rgba(59, 130, 246, .45);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.1);
 }
 
 .ld-pcard-img {
@@ -761,12 +775,62 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 20px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: .08em;
+  background: rgba(30, 41, 59, 0.85);
+  color: #60a5fa;
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.ld-pcard-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(96, 165, 250, 0.2);
+  font-size: 48px;
+}
+
+.ld-pcard-skeleton {
+  height: 380px;
+  border-radius: 20px;
+  background: linear-gradient(110deg, rgba(255,255,255,0.02) 45%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 55%);
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.5s infinite linear;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+@keyframes skeletonPulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.ld-mockup-loading {
+  width: 100%;
+  height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 8, 16, 0.6);
+  color: #3b82f6;
+  font-size: 40px;
+}
+
+.ld-loading-pulse {
+  animation: loadingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+  0% { opacity: 0.3; transform: scale(0.9); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+  100% { opacity: 0.3; transform: scale(0.9); }
 }
 
 .ld-pcard-body {
@@ -1060,3 +1124,23 @@
     transform: translateY(-4px) scale(1.1);
   }
 }
+/* Custom Auth Modal */
+.ld-modal-overlay { position: fixed; inset: 0; z-index: 10000; background: rgba(5, 8, 16, 0.7); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; padding: 20px; animation: ldFadeIn 0.3s ease forwards; }
+.ld-modal-box { position: relative; width: 100%; max-width: 440px; background: #0a0f1d; border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 24px; padding: 40px 32px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); animation: ldModalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; overflow: hidden; }
+@keyframes ldFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ldModalSlideUp { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.ld-modal-glow { position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 200px; height: 100px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%); pointer-events: none; }
+.ld-modal-close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #475569; font-size: 24px; cursor: pointer; transition: color 0.2s; }
+.ld-modal-close-btn:hover { color: #fff; }
+.ld-modal-icon-wrap { position: relative; width: 80px; height: 80px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; }
+.ld-modal-icon-ring { position: absolute; inset: 0; border: 2px dashed rgba(59, 130, 246, 0.3); border-radius: 50%; animation: ldSpin 10s linear infinite; }
+.ld-modal-icon { font-size: 40px; color: #3b82f6; filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5)); }
+@keyframes ldSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.ld-modal-title { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 12px; }
+.ld-modal-text { font-size: 15px; color: #94a3b8; line-height: 1.6; margin-bottom: 32px; }
+.ld-modal-text strong { color: #fff; }
+.ld-modal-actions { display: flex; flex-direction: column; gap: 12px; }
+.ld-modal-btn-primary { width: 100%; padding: 16px; border-radius: 12px; border: none; background: linear-gradient(135deg, #3b82f6, #06b6d4); color: #fff; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s, box-shadow 0.2s; }
+.ld-modal-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3); }
+.ld-modal-btn-ghost { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); background: transparent; color: #64748b; font-weight: 600; font-size: 14px; cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+.ld-modal-btn-ghost:hover { color: #fff; border-color: rgba(255, 255, 255, 0.2); }
