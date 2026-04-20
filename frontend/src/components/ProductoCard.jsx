@@ -34,12 +34,18 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
     }
   }, [producto.proveedor_id]);
 
-  const price = Number(producto.precio).toLocaleString("es-MX", {
-    style: "currency", currency: "MXN", minimumFractionDigits: 0,
-  });
-
   const [c1, c2] = CAT_COLORS[producto.categoria] ?? ["#2b6cb0","#63b3ed"];
   const provIni = proveedor?.name?.charAt(0).toUpperCase() ?? "?";
+
+  const hasDiscount = producto.descuento > 0;
+  const discountedPrice = hasDiscount ? producto.precio * (1 - producto.descuento / 100) : producto.precio;
+  
+  const formattedPrice = Number(discountedPrice).toLocaleString("es-MX", {
+    style: "currency", currency: "MXN", minimumFractionDigits: 0,
+  });
+  const oldPrice = Number(producto.precio).toLocaleString("es-MX", {
+    style: "currency", currency: "MXN", minimumFractionDigits: 0,
+  });
 
   const handleAdd = async (e) => {
     e.stopPropagation();
@@ -81,12 +87,6 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
             </div>
           )}
 
-          {producto.categoria && (
-            <span className="pc-badge" style={{ background: 'rgba(5, 8, 16, 0.85)', color: c2, border: `1px solid ${c1}44`, backdropFilter: 'blur(4px)' }}>
-              {producto.categoria}
-            </span>
-          )}
-
           <div className="pc-img-gradient" />
         </div>
 
@@ -99,13 +99,14 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
           <div className="pc-footer">
             <div className="pc-price-wrap">
               <p className="pc-price-label">Precio</p>
-              <p className="pc-price">{price}</p>
+              {hasDiscount && <span className="pc-old-price">{oldPrice}</span>}
+              <p className="pc-price" style={hasDiscount ? { color: '#ef4444' } : {}}>{formattedPrice}</p>
             </div>
 
             <div className="pc-footer-actions">
               <button
                 className="pc-add-btn-full"
-                style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                style={{ background: `linear-gradient(135deg, #3b82f6, #1d4ed8)` }}
                 onClick={handleAdd}
               >
                 <IonIcon icon={added ? checkmarkOutline : cartOutline} />
@@ -157,10 +158,9 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
                   <IonIcon icon={imageOutline} style={{ fontSize: '80px', color: c1, opacity: 0.18 }} />
                 </div>
               )}
-              {producto.categoria && (
-                <div className="pdm-cat-badge" style={{ background: `${c1}cc`, boxShadow: `0 4px 16px ${c1}40` }}>
-                  <IonIcon icon={sparklesOutline} />
-                  {producto.categoria}
+              {hasDiscount && (
+                <div className="pdm-discount-badge">
+                  -{producto.descuento}% OFF
                 </div>
               )}
             </div>
@@ -186,8 +186,9 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
               {/* Price */}
               <div className="pdm-price-row">
                 <span className="pdm-currency">MXN</span>
-                <span className="pdm-amount" style={{ color: c2 }}>
-                  {Number(producto.precio).toLocaleString('es-MX', { minimumFractionDigits: 0 })}
+                {hasDiscount && <span className="pdm-old-price">{oldPrice}</span>}
+                <span className="pdm-amount" style={{ color: hasDiscount ? '#ef4444' : c2 }}>
+                  {Number(discountedPrice).toLocaleString('es-MX', { minimumFractionDigits: 0 })}
                 </span>
               </div>
 
@@ -211,22 +212,6 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
                     </div>
                   </div>
                 )}
-                {producto.categoria && (
-                  <div className="pdm-spec-chip">
-                    <IonIcon icon={storefrontOutline} style={{ color: c2 }} />
-                    <div>
-                      <span className="pdm-spec-label">Categoría</span>
-                      <span className="pdm-spec-value">{producto.categoria}</span>
-                    </div>
-                  </div>
-                )}
-                <div className="pdm-spec-chip">
-                  <IonIcon icon={shieldCheckmarkOutline} style={{ color: c2 }} />
-                  <div>
-                    <span className="pdm-spec-label">Garantía</span>
-                    <span className="pdm-spec-value">Incluida</span>
-                  </div>
-                </div>
               </div>
 
               {/* Description */}
@@ -271,13 +256,13 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
           <div className="pdm-cta-bar">
             <div className="pdm-cta-price-mini">
               <span className="pdm-cta-label">Total</span>
-              <span className="pdm-cta-amount">{price}</span>
+              <span className="pdm-cta-amount">{formattedPrice}</span>
             </div>
             <button
               className={`pdm-cta-btn ${producto.stock <= 0 ? 'pdm-cta-disabled' : ''} ${added ? 'pdm-cta-success' : ''}`}
               onClick={() => { if (producto.stock > 0) handleAddFromModal(); }}
               disabled={producto.stock <= 0}
-              style={!added ? { background: `linear-gradient(135deg, ${c1}, ${c2})`, boxShadow: `0 6px 24px ${c1}50` } : {}}
+              style={!added ? { background: `linear-gradient(135deg, #3b82f6, #1d4ed8)`, boxShadow: `0 6px 24px rgba(59, 130, 246, 0.3)` } : {}}
             >
               <IonIcon icon={added ? checkmarkOutline : cartOutline} />
               <span>{added ? '¡Agregado!' : (producto.stock > 0 ? 'Añadir al carrito' : 'Agotado')}</span>

@@ -36,7 +36,9 @@ const ToastContainer = ({ toasts }) => (
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')));
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
+
   const toastIdRef = useRef(0);
 
   /* ── Toast System ── */
@@ -117,6 +119,7 @@ export const CartProvider = ({ children }) => {
         id: producto.id,
         nombre: producto.nombre,
         precio: producto.precio,
+        descuento: producto.descuento || 0,
         imagen: producto.imagen,
         marca: producto.marca,
         cantidad: 1,
@@ -244,7 +247,11 @@ export const CartProvider = ({ children }) => {
   };
 
   const cartItemCount = cart.reduce((total, item) => total + item.cantidad, 0);
-  const cartTotal = cart.reduce((total, item) => total + (Number(item.precio) * item.cantidad), 0);
+  const cartTotal = cart.reduce((total, item) => {
+    const itemDiscount = item.descuento || 0;
+    const discountedPrice = Number(item.precio) * (1 - itemDiscount / 100);
+    return total + (discountedPrice * item.cantidad);
+  }, 0);
 
   return (
     <CartContext.Provider value={{
@@ -255,6 +262,8 @@ export const CartProvider = ({ children }) => {
       clearCart,
       cartItemCount,
       cartTotal,
+      isCartOpen,
+      setIsCartOpen,
       showToast,
       refreshCart: () => user && fetchCart(user.id)
     }}>

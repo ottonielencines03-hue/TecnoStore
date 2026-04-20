@@ -24,6 +24,7 @@ class CarritoController extends Controller
                 'id' => $item->producto->id,
                 'nombre' => $item->producto->nombre,
                 'precio' => $item->producto->precio,
+                'descuento' => $item->producto->descuento ?? 0,
                 'imagen' => $item->producto->imagen,
                 'marca' => $item->producto->marca,
                 'cantidad' => $item->cantidad,

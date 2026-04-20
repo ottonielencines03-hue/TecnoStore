@@ -45,6 +45,7 @@ const PanelProveedor = () => {
     modelo: "",
     precio: "",
     stock: "",
+    descuento: "",
     descripcion: "",
     imagen: null,
     tarjeta_pago: "",
@@ -123,6 +124,7 @@ const PanelProveedor = () => {
       formData.append("marca", producto.marca || "");
       formData.append("modelo", producto.modelo || "");
       formData.append("precio", producto.precio);
+      formData.append("descuento", producto.descuento || 0);
       formData.append("stock", producto.stock || 0);
       formData.append("descripcion", producto.descripcion || "");
       formData.append("proveedor_id", user.id);
@@ -159,6 +161,7 @@ const PanelProveedor = () => {
         modelo: "",
         precio: "",
         stock: "",
+        descuento: "",
         descripcion: "",
         imagen: null,
         tarjeta_pago: "",
@@ -263,6 +266,11 @@ const PanelProveedor = () => {
                     <div className="pp-field">
                       <label className="pp-label">Stock</label>
                       <input type="number" name="stock" placeholder="Stock" value={producto.stock} onChange={handleChange} className="pp-input" required/>
+                    </div>
+
+                    <div className="pp-field">
+                      <label className="pp-label">Descuento (%)</label>
+                      <input type="number" name="descuento" placeholder="Ej. 15" value={producto.descuento} onChange={handleChange} className="pp-input" max="100" min="0" />
                     </div>
 
                     <div className="pp-field pp-span">

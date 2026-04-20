@@ -9,8 +9,14 @@ import { useCart } from '../context/CartContext';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import './CartModal.css';
 
-const CartModal = ({ isOpen, onDismiss, onRequireAuth }) => {
-  const { cart, removeFromCart, updateQuantity, cartTotal, cartItemCount, clearCart, showToast } = useCart();
+const CartModal = ({ isOpen: propIsOpen, onDismiss: propOnDismiss, onRequireAuth }) => {
+  const { 
+    cart, removeFromCart, updateQuantity, cartTotal, cartItemCount, 
+    clearCart, showToast, isCartOpen, setIsCartOpen 
+  } = useCart();
+  
+  const isOpen = propIsOpen !== undefined ? propIsOpen : isCartOpen;
+  const onDismiss = propOnDismiss || (() => setIsCartOpen(false));
   const [removingId, setRemovingId] = useState(null);
   const [showPaypal, setShowPaypal] = useState(false);
   const overlayRef = useRef(null);
@@ -124,7 +130,12 @@ const CartModal = ({ isOpen, onDismiss, onRequireAuth }) => {
                     </div>
 
                     <div className="cm-item-bottom-row">
-                      <p className="cm-item-price">{formatPrice(item.precio)}</p>
+                      <div className="cm-item-price-wrap">
+                        {item.descuento > 0 && <span className="cm-item-old-price">{formatPrice(item.precio)}</span>}
+                        <p className="cm-item-price" style={item.descuento > 0 ? { color: '#ef4444' } : {}}>
+                          {formatPrice(item.precio * (1 - (item.descuento || 0) / 100))}
+                        </p>
+                      </div>
 
                       <div className="cm-qty-control">
                         <button
@@ -147,7 +158,7 @@ const CartModal = ({ isOpen, onDismiss, onRequireAuth }) => {
 
                     {/* Subtotal por item */}
                     <p className="cm-item-subtotal">
-                      Subtotal: {formatPrice(item.precio * item.cantidad)}
+                      Subtotal: {formatPrice(item.precio * (1 - (item.descuento || 0) / 100) * item.cantidad)}
                     </p>
                   </div>
                 </div>

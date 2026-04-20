@@ -27,7 +27,7 @@ Route::get('/productos/proveedor/{proveedor_id}', [ProductoController::class, 'b
 Route::post('/productos/{id}', [ProductoController::class, 'update']);
 Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
 
-// Stats
+Route::get('/categorias', [ProductoController::class, 'getCategorias']);
 Route::get('/stats', [StatsController::class, 'getStats']);
 Route::get('/stats/proveedor/{id}', [StatsController::class, 'getProviderStats']);
 

@@ -26,9 +26,17 @@ const Productos = () => {
   const [categoriaSeleccionada, setCategoria] = useState("Todos");
   const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState("");
-  const [showCart, setShowCart] = useState(false);
   const [showAuthAlert, setShowAuthAlert] = useState(false);
-  const { cartItemCount } = useCart();
+  const { cartItemCount, setIsCartOpen } = useCart();
+
+  // Set selected category from URL query param
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('category');
+    if (cat) {
+      setCategoria(cat);
+    }
+  }, []);
 
   const requireAuth = () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -110,7 +118,7 @@ const Productos = () => {
               <button 
                 className="pg-cart-btn" 
                 onClick={() => {
-                  if (requireAuth()) setShowCart(true);
+                  if (requireAuth()) setIsCartOpen(true);
                 }}
               >
                 <IonIcon icon={cartOutline} />
@@ -191,7 +199,6 @@ const Productos = () => {
         </div>
       </IonModal>
 
-      <CartModal isOpen={showCart} onDismiss={() => setShowCart(false)} onRequireAuth={requireAuth} />
     </IonPage>
   );
 };

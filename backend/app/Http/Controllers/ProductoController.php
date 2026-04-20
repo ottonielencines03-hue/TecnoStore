@@ -29,6 +29,7 @@ class ProductoController extends Controller
                 'marca'        => 'nullable|string',
                 'modelo'       => 'nullable|string',
                 'precio'       => 'required|numeric',
+                'descuento'    => 'nullable|integer|min:0|max:100',
                 'stock'        => 'nullable|integer',
                 'descripcion'  => 'nullable|string',
                 'imagen'       => 'nullable|image|max:5120',
@@ -42,6 +43,7 @@ class ProductoController extends Controller
             $producto->marca       = $request->marca;
             $producto->modelo      = $request->modelo;
             $producto->precio      = $request->precio;
+            $producto->descuento   = $request->descuento ?? 0;
             $producto->stock       = $request->stock ?? 0;
             $producto->descripcion = $request->descripcion;
             $producto->proveedor_id = $request->proveedor_id;
@@ -86,6 +88,7 @@ class ProductoController extends Controller
                 'marca'       => 'nullable|string',
                 'modelo'      => 'nullable|string',
                 'precio'      => 'required|numeric',
+                'descuento'   => 'nullable|integer|min:0|max:100',
                 'stock'       => 'nullable|integer',
                 'descripcion' => 'nullable|string',
                 'imagen'      => 'nullable|image|max:5120',
@@ -97,6 +100,7 @@ class ProductoController extends Controller
             $producto->marca       = $request->marca;
             $producto->modelo      = $request->modelo;
             $producto->precio      = $request->precio;
+            $producto->descuento   = $request->descuento ?? 0;
             $producto->stock       = $request->stock ?? 0;
             $producto->descripcion = $request->descripcion;
             $producto->tarjeta_pago= $request->tarjeta_pago;
@@ -155,5 +159,14 @@ class ProductoController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+    // Get distinct categories
+    public function getCategorias()
+    {
+        return response()->json(
+            Producto::whereNotNull('categoria')
+                ->distinct()
+                ->pluck('categoria')
+        );
     }
 }

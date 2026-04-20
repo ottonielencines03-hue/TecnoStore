@@ -1105,3 +1105,228 @@ ion-popover.user-menu-popover {
   background: rgba(239, 68, 68, 0.15);
   color: #ef4444;
 }
+/* Carousel Styles */
+.pi-hero-carousel {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .08);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, .1), 0 40px 80px rgba(0, 0, 0, .6);
+}
+
+.pi-carousel-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+  display: flex;
+  flex-direction: column;
+}
+
+.pi-carousel-slide.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.pi-carousel-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 10s linear;
+}
+
+.pi-carousel-slide.active img {
+  transform: scale(1.1);
+}
+
+.pi-carousel-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px;
+  background: linear-gradient(to top, rgba(5, 8, 16, 0.95) 0%, rgba(5, 8, 16, 0.6) 50%, transparent 100%);
+  color: white;
+  transform: translateY(20px);
+  transition: transform 0.6s 0.2s ease;
+}
+
+.pi-carousel-slide.active .pi-carousel-info {
+  transform: translateY(0);
+}
+
+.pi-info-cat {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #60a5fa;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.pi-info-name {
+  font-size: 24px;
+  margin: 5px 0;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+}
+
+.pi-info-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: #60a5fa;
+}
+
+.pi-carousel-dots {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+  z-index: 20;
+}
+
+.pi-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.pi-dot.active {
+  background: #3b82f6;
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* Super Deals Section */
+.pi-deals-section {
+  background: radial-gradient(circle at top right, rgba(239, 68, 68, 0.05), transparent 60%);
+  position: relative;
+  border-radius: 40px;
+  margin: 40px auto;
+  border: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+.pi-feat-price-old {
+  font-size: 12px;
+  color: rgba(148, 163, 184, 0.5);
+  text-decoration: line-through;
+  display: block;
+  margin-bottom: -2px;
+}
+
+.pi-feat-skeleton {
+  height: 350px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 20px;
+  animation: pi-pulse 1.5s infinite;
+}
+
+@keyframes pi-pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+/* Product Carousel Section */
+.pi-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+}
+
+.pi-carousel-nav {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pi-nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.pi-nav-btn:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.pi-prods-track-container {
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  margin: 0 -80px;
+  padding: 20px 80px 40px;
+}
+
+.pi-prods-track-container::-webkit-scrollbar {
+  display: none;
+}
+
+.pi-prods-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+}
+
+.pi-carousel-card {
+  width: 280px;
+  flex-shrink: 0;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.pi-carousel-card:hover {
+  transform: scale(1.05) translateY(-10px);
+  z-index: 10;
+}
+
+@media (max-width: 900px) {
+  .pi-prods-track-container {
+    margin: 0 -24px;
+    padding: 0 24px;
+  }
+  
+  .pi-carousel-card {
+    width: 240px;
+  }
+}
+
+/* Floating Animation for Cards */
+.pi-carousel-card {
+  animation: pi-card-float 6s ease-in-out infinite;
+}
+
+.pi-carousel-card:nth-child(even) {
+  animation-delay: 1.5s;
+}
+
+@keyframes pi-card-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Ensure the track doesn't jitter during scroll */
+.pi-prods-track-container {
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
+}

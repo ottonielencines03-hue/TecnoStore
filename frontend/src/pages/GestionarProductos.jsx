@@ -60,6 +60,7 @@ const GestionarProductos = () => {
       modelo: p.modelo || "",
       precio: p.precio || "",
       stock: p.stock || "",
+      descuento: p.descuento || "",
       descripcion: p.descripcion || "",
       tarjeta_pago: p.tarjeta_pago || "",
     });
@@ -77,6 +78,7 @@ const GestionarProductos = () => {
       fd.append("marca", form.marca || "");
       fd.append("modelo", form.modelo || "");
       fd.append("precio", form.precio);
+      fd.append("descuento", form.descuento || 0);
       fd.append("stock", form.stock || 0);
       fd.append("descripcion", form.descripcion || "");
       if (form.tarjeta_pago) fd.append("tarjeta_pago", form.tarjeta_pago);
@@ -209,6 +211,7 @@ const GestionarProductos = () => {
                       <tr>
                         <th>Producto</th>
                         <th>Categoría</th>
+                        <th>Descuento</th>
                         <th>Precio</th>
                         <th>Stock</th>
                         <th style={{ textAlign:"center" }}>Acciones</th>
@@ -233,6 +236,15 @@ const GestionarProductos = () => {
                             <span className="gp-badge badge-indigo">
                               {p.categoria}
                             </span>
+                          </td>
+                          <td style={{ textAlign:"center" }}>
+                            {p.descuento > 0 ? (
+                              <span className="gp-badge badge-red" style={{ fontWeight: 700 }}>
+                                -{p.descuento}%
+                              </span>
+                            ) : (
+                              <span style={{ color: "#9ca3af", fontSize: 12 }}>—</span>
+                            )}
                           </td>
                           <td>
                             <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, color:"#1e1b4b" }}>
@@ -309,6 +321,12 @@ const GestionarProductos = () => {
                     <label className="gp-mlabel">Stock</label>
                     <input className="gp-minput" type="number" value={form.stock}
                       onChange={e => setForm({...form, stock: e.target.value})} />
+                  </div>
+
+                  <div className="gp-mfield">
+                    <label className="gp-mlabel">Descuento (%)</label>
+                    <input className="gp-minput" type="number" value={form.descuento}
+                      onChange={e => setForm({...form, descuento: e.target.value})} min="0" max="100" />
                   </div>
 
                   <div className="gp-mfield gp-mspan">

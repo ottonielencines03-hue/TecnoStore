@@ -12,6 +12,9 @@ import PerfilProveedor from './pages/PerfilProveedor';
 import Productos from './pages/Productos';
 import GestionarProductos from './pages/GestionarProductos';
 
+/* Components */
+import CartModal from './components/CartModal';
+
 /* Context */
 import { CartProvider } from './context/CartContext';
 
@@ -26,15 +29,16 @@ const App = () => {
       <CartProvider>
         <IonReactRouter>
           <IonRouterOutlet>
-          <Route exact path="/" component={Landing} />
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/PantallaInicio" component={PantallaInicio} />
-          <Route exact path="/proveedor" component={PanelProveedor} />
-          <Route exact path="/perfil-proveedor" component={PerfilProveedor} />
-          <Route exact path="/productos" component={Productos} />
-          <Route exact path="/gestionar-productos" component={GestionarProductos} />
-          <Redirect to="/" />
+            <Route exact path="/" component={Landing} />
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/PantallaInicio" component={PantallaInicio} />
+            <Route exact path="/proveedor" component={PanelProveedor} />
+            <Route exact path="/perfil-proveedor" component={PerfilProveedor} />
+            <Route exact path="/productos" component={Productos} />
+            <Route exact path="/gestionar-productos" component={GestionarProductos} />
+            <Redirect to="/" />
           </IonRouterOutlet>
+          <CartModal />
         </IonReactRouter>
       </CartProvider>
     </IonApp>

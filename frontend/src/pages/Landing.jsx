@@ -28,8 +28,6 @@ const MARQUEE_ITEMS = ["MacBook Pro", "iPhone 16", "Sony WH-1000XM5", "Samsung G
 const FEATURES = [
   { icon: shieldCheckmarkOutline, color: "#3b82f6", title: "Pagos Blindados", desc: "Cifrado SSL y autenticación de dos factores en cada transacción." },
   { icon: flashOutline, color: "#06b6d4", title: "Tech de Punta", desc: "Los últimos lanzamientos disponibles antes que en cualquier otra tienda." },
-  { icon: rocketOutline, color: "#34d399", title: "Envío Express", desc: "24-48h con rastreo en tiempo real directo desde tu dashboard." },
-  { icon: heartOutline, color: "#f59e0b", title: "Garantía Oficial", desc: "Todos los productos con garantía del fabricante y soporte dedicado." },
   { icon: peopleOutline, color: "#818cf8", title: "Red de Proveedores", desc: "Más de 340 vendedores verificados compitiendo por el mejor precio." },
   { icon: chatbubblesOutline, color: "#f472b6", title: "Soporte 24/7", desc: "Chat en vivo, email y teléfono disponibles toda la semana." },
 ];
