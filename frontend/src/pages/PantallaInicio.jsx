@@ -207,9 +207,9 @@ const PantallaInicio = () => {
 
               <div className="pi-hero-stats">
                 {[
-                  { n: `${realStats.products}+`, l: "Productos" },
-                  { n: `${realStats.customers}+`, l: "Clientes" },
-                  { n: "4.9★", l: "Rating" }
+                  { n: `${realStats.products || 0}+`, l: "Productos" },
+                  { n: `${realStats.customers || 0}+`, l: "Clientes" },
+                  { n: `${realStats.avg_rating || "5.0"}★`, l: "Rating" }
                 ].map(({ n, l }) => (
                   <div key={l} className="pi-stat-item">
                     <div className="pi-stat-num">{n}</div>

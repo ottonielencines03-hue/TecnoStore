@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   IonContent, 
   IonPage, 
@@ -29,6 +29,19 @@ const Login = () => {
   });
   
   const [errors, setErrors] = useState({});
+  const [platformStats, setPlatformStats] = useState({ customers: 0, avg_rating: 0 });
+
+  useEffect(() => {
+    fetch("http://localhost:8000/api/stats")
+      .then(res => res.json())
+      .then(data => {
+        setPlatformStats({
+          customers: data.customers,
+          avg_rating: data.avg_rating
+        });
+      })
+      .catch(err => console.error("Error fetching platform stats:", err));
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -171,8 +184,8 @@ const Login = () => {
                   <IonIcon icon={peopleOutline} />
                 </div>
                 <div>
-                  <p className="lg-trust-title">+8,200 usuarios felices</p>
-                  <p className="lg-trust-sub">Calificación promedio 4.9/5 estrellas</p>
+                  <p className="lg-trust-title">+{platformStats.customers.toLocaleString()} usuarios felices</p>
+                  <p className="lg-trust-sub">Calificación promedio {platformStats.avg_rating || "5.0"}/5 estrellas</p>
                 </div>
               </div>
             </div>

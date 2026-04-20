@@ -14,11 +14,14 @@ class StatsController extends Controller
      */
     public function getStats()
     {
+        $avg_rating = \App\Models\Reseña::avg('estrellas') ?: 5.0;
+        
         return response()->json([
             'products' => \App\Models\Producto::count(),
             'providers' => \App\Models\Proveedor::count(),
             'customers' => \App\Models\User::count(),
-            'satisfaction' => 99 
+            'avg_rating' => round($avg_rating, 1),
+            'satisfaction' => round(($avg_rating / 5) * 100) 
         ]);
     }
 
