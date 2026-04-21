@@ -246,6 +246,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const uniqueItemCount = cart.length;
   const cartItemCount = cart.reduce((total, item) => total + item.cantidad, 0);
   const cartTotal = cart.reduce((total, item) => {
     const itemDiscount = item.descuento || 0;
@@ -261,10 +262,12 @@ export const CartProvider = ({ children }) => {
       updateQuantity,
       clearCart,
       cartItemCount,
+      uniqueItemCount,
       cartTotal,
       isCartOpen,
       setIsCartOpen,
       showToast,
+      user,
       refreshCart: () => user && fetchCart(user.id)
     }}>
       {children}

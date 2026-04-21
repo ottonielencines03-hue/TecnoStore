@@ -6,19 +6,25 @@ import {
   imageOutline, chevronForwardOutline
 } from 'ionicons/icons';
 import { useCart } from '../context/CartContext';
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
+import axios from 'axios';
+import ReceiptModal from './ReceiptModal';
 import './CartModal.css';
 
 const CartModal = ({ isOpen: propIsOpen, onDismiss: propOnDismiss, onRequireAuth }) => {
   const { 
-    cart, removeFromCart, updateQuantity, cartTotal, cartItemCount, 
-    clearCart, showToast, isCartOpen, setIsCartOpen 
+    cart, removeFromCart, updateQuantity, cartTotal, cartItemCount, uniqueItemCount,
+    clearCart, showToast, isCartOpen, setIsCartOpen, user 
   } = useCart();
   
   const isOpen = propIsOpen !== undefined ? propIsOpen : isCartOpen;
   const onDismiss = propOnDismiss || (() => setIsCartOpen(false));
   const [removingId, setRemovingId] = useState(null);
   const [showPaypal, setShowPaypal] = useState(false);
+  const [orderResult, setOrderResult] = useState(null);
+  const [isReceiptOpen, setIsReceiptOpen] = useState(false);
+  const [isPaypalLoading, setIsPaypalLoading] = useState(true);
+  const [{ isPending, isResolved, isRejected }] = usePayPalScriptReducer();
   const overlayRef = useRef(null);
 
   const handleOverlayClick = (e) => {
@@ -59,9 +65,9 @@ const CartModal = ({ isOpen: propIsOpen, onDismiss: propOnDismiss, onRequireAuth
             <div>
               <h2 className="cm-title">Mi Carrito</h2>
               <p className="cm-subtitle">
-                {cartItemCount === 0
+                {uniqueItemCount === 0
                   ? 'Sin productos'
-                  : `${cartItemCount} ${cartItemCount === 1 ? 'producto' : 'productos'}`}
+                  : `${uniqueItemCount} ${uniqueItemCount === 1 ? 'producto' : 'productos'}`}
               </p>
             </div>
           </div>
@@ -191,7 +197,7 @@ const CartModal = ({ isOpen: propIsOpen, onDismiss: propOnDismiss, onRequireAuth
                 className="cm-checkout-btn" 
                 onClick={() => {
                   if (onRequireAuth && !onRequireAuth()) {
-                    onDismiss(); // Cierra el carrito para que vea el modal de login
+                    onDismiss();
                     return;
                   }
                   setShowPaypal(true);
@@ -200,25 +206,96 @@ const CartModal = ({ isOpen: propIsOpen, onDismiss: propOnDismiss, onRequireAuth
                 <IonIcon icon={chevronForwardOutline} />
               </button>
             ) : (
-              <div style={{ marginTop: '16px', position: 'relative', zIndex: 1, minHeight: '150px' }}>
-                <PayPalScriptProvider options={{ "client-id": "test", currency: "MXN" }}>
+              <div style={{ marginTop: '16px', position: 'relative', zIndex: 1100, minHeight: '150px' }}>
+                {(isPaypalLoading || isPending) && !isRejected && (
+                  <p style={{ textAlign: 'center', color: '#64748b', fontSize: '14px', marginBottom: '12px' }}>
+                    Cargando métodos de pago seguros...
+                  </p>
+                )}
+                
+                {isRejected && (
+                  <div style={{ textAlign: 'center', padding: '20px', background: '#fef2f2', borderRadius: '12px', border: '1px solid #fee2e2' }}>
+                    <p style={{ color: '#dc2626', fontSize: '14px', marginBottom: '8px', fontWeight: 'bold' }}>
+                      Error al cargar PayPal.
+                    </p>
+                    <p style={{ color: '#ef4444', fontSize: '12px', marginBottom: '16px' }}>
+                      Por favor, revisa la <b>consola de tu navegador (F12)</b> para ver el error exacto (ej. Client ID inválido).
+                    </p>
+                    <button 
+                      onClick={() => window.location.reload()}
+                      style={{ background: '#dc2626', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer' }}
+                    >
+                      Recargar página
+                    </button>
+                  </div>
+                )}
+                
+                {isResolved && (
                   <PayPalButtons 
-                    createOrder={(data, actions) => {
-                      return actions.order.create({
-                        purchase_units: [{
-                          amount: { value: cartTotal.toString() }
-                        }]
-                      });
-                    }}
-                    onApprove={(data, actions) => {
-                      return actions.order.capture().then((details) => {
-                        clearCart();
-                        onDismiss();
-                        showToast('¡Pago procesado correctamente!', 'success');
-                      });
-                    }}
-                  />
-                </PayPalScriptProvider>
+                    style={{ layout: "vertical", color: "blue", shape: "rect", label: "paypal" }}
+                    onInit={() => setIsPaypalLoading(false)}
+                  createOrder={(data, actions) => {
+                    return actions.order.create({
+                      purchase_units: [{
+                        amount: { 
+                          currency_code: "MXN",
+                          value: cartTotal.toFixed(2).toString() 
+                        }
+                      }]
+                    });
+                  }}
+                  onApprove={(data, actions) => {
+                    return actions.order.capture().then(async (details) => {
+                      try {
+                        const orderData = {
+                          user_id: user?.id || 1,
+                          paypal_id: details.id,
+                          total: cartTotal,
+                          items: cart.map(item => ({
+                            producto_id: item.id,
+                            cantidad: item.cantidad,
+                            precio_unitario: item.precio * (1 - (item.descuento || 0) / 100),
+                          }))
+                        };
+
+                        const response = await axios.post('http://localhost:8000/api/ordenes', orderData);
+                        
+                        if (response.data.status === 'success') {
+                          setOrderResult(response.data.order);
+                          setIsReceiptOpen(true);
+                          clearCart();
+                          setShowPaypal(false);
+                          if (showToast) showToast('¡Compra realizada con éxito!', 'success');
+                        }
+                      } catch (error) {
+                        console.error("Error al guardar la orden:", error);
+                        if (showToast) showToast('Pago procesado, pero hubo un error al registrar la orden.', 'warning');
+                      }
+                    });
+                  }}
+                  onError={(err) => {
+                    console.error("PayPal Error:", err);
+                    if (showToast) showToast('Hubo un error al cargar PayPal. Intenta de nuevo.', 'danger');
+                    setShowPaypal(false);
+                  }}
+                />
+                )}
+                <button 
+                  style={{ 
+                    width: '100%', 
+                    background: 'transparent', 
+                    border: '1px solid #e2e8f0', 
+                    borderRadius: '12px', 
+                    padding: '8px', 
+                    marginTop: '12px',
+                    color: '#64748b',
+                    fontSize: '13px',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setShowPaypal(false)}
+                >
+                  Cancelar y volver
+                </button>
               </div>
             )}
 
@@ -229,6 +306,17 @@ const CartModal = ({ isOpen: propIsOpen, onDismiss: propOnDismiss, onRequireAuth
           </div>
         )}
       </div>
+
+      {isReceiptOpen && orderResult && (
+        <ReceiptModal 
+          isOpen={isReceiptOpen} 
+          onClose={() => {
+            setIsReceiptOpen(false);
+            onDismiss(); // Cerrar el carrito también
+          }} 
+          orderData={orderResult} 
+        />
+      )}
     </div>
   );
 };

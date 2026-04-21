@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\OrdenController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -42,3 +43,7 @@ Route::delete('/carrito/{user_id}', [CarritoController::class, 'clear']);
 // Perfil y Ajustes
 Route::post('/perfil/cliente/{id}', [ProfileController::class, 'updateCliente']);
 Route::post('/perfil/proveedor/{id}', [ProfileController::class, 'updateProveedor']);
+
+// Órdenes
+Route::post('/ordenes', [OrdenController::class, 'store']);
+Route::get('/ordenes/{id}', [OrdenController::class, 'show']);
