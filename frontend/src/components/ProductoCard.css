@@ -60,6 +60,52 @@
 
 .pc-img-gradient { display: none; }
 
+/* ─── Social Media Overlay ─── */
+.pc-social-overlay {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.pc-card-inner:hover .pc-social-overlay {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.pc-social-link {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.pc-social-link:hover {
+  transform: scale(1.15) rotate(5deg);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.pc-social-link.fb:hover { background: #1877f2; box-shadow: 0 4px 12px rgba(24, 119, 242, 0.4); }
+.pc-social-link.ig:hover { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); box-shadow: 0 4px 12px rgba(220, 39, 67, 0.4); }
+.pc-social-link.tk:hover { background: #000000; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+.pc-social-link.wa:hover { background: #25d366; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4); }
+
 .pc-badge {
   position: absolute;
   top: 10px;
@@ -654,6 +700,56 @@ ion-modal.pdm-modal {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ─── Modal Social Media ─── */
+.pdm-social-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+.pdm-social-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(148, 163, 184, 0.6);
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.pdm-prov-socials {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pdm-social-btn {
+  flex: 1;
+  height: 46px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-decoration: none;
+}
+
+.pdm-social-btn:hover {
+  transform: translateY(-4px);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.pdm-social-btn.fb:hover { background: #1877f2; border-color: #1877f2; box-shadow: 0 8px 20px rgba(24, 119, 242, 0.3); }
+.pdm-social-btn.ig:hover { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); border-color: transparent; box-shadow: 0 8px 20px rgba(220, 39, 67, 0.3); }
+.pdm-social-btn.tk:hover { background: #000; border-color: #333; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); }
+.pdm-social-btn.wa:hover { background: #25d366; border-color: #25d366; box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3); }
 
 /* ─── Sticky CTA Bar ─── */
 .pdm-cta-bar {

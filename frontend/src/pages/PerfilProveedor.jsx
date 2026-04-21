@@ -18,7 +18,11 @@ import {
   lockClosedOutline,
   notificationsOutline,
   colorPaletteOutline,
-  saveOutline
+  saveOutline,
+  logoFacebook,
+  logoInstagram,
+  logoTiktok,
+  logoWhatsapp
 } from 'ionicons/icons';
 import './PerfilProveedor.css';
 import { useCart } from '../context/CartContext';
@@ -40,7 +44,11 @@ const PerfilProveedor = () => {
     telefono: "",
     direccion: "",
     password: "",
-    avatar_file: null
+    avatar_file: null,
+    facebook: "",
+    instagram: "",
+    tiktok: "",
+    whatsapp: ""
   });
 
   // Settings State (for JSON field)
@@ -65,7 +73,11 @@ const PerfilProveedor = () => {
         telefono: data.telefono || "",
         direccion: data.direccion || "",
         password: "",
-        avatar_file: null
+        avatar_file: null,
+        facebook: data.facebook || "",
+        instagram: data.instagram || "",
+        tiktok: data.tiktok || "",
+        whatsapp: data.whatsapp || ""
       });
 
       if (data.ajustes) {
@@ -114,6 +126,10 @@ const PerfilProveedor = () => {
       form.append("empresa", formData.empresa);
       form.append("telefono", formData.telefono);
       form.append("direccion", formData.direccion);
+      form.append("facebook", formData.facebook);
+      form.append("instagram", formData.instagram);
+      form.append("tiktok", formData.tiktok);
+      form.append("whatsapp", formData.whatsapp);
       
       if (formData.password) {
         form.append("password", formData.password);
@@ -279,6 +295,41 @@ const PerfilProveedor = () => {
                         <div className="prov-input-wrapper">
                           <IonIcon icon={locationOutline} className="input-icon" />
                           <input type="text" name="direccion" value={formData.direccion} onChange={handleChange} />
+                        </div>
+                      </div>
+
+                      <div className="prov-divider" style={{ gridColumn: '1/-1', height: '1px', background: 'rgba(255,255,255,0.05)', margin: '10px 0' }} />
+                      <h3 style={{ gridColumn: '1/-1', fontSize: '14px', fontWeight: '700', color: '#fff', marginBottom: '10px' }}>Redes Sociales</h3>
+
+                      <div className="prov-input-group">
+                        <label>Enlace Facebook</label>
+                        <div className="prov-input-wrapper">
+                          <IonIcon icon={logoFacebook} className="input-icon" />
+                          <input type="text" name="facebook" placeholder="https://facebook.com/..." value={formData.facebook} onChange={handleChange} />
+                        </div>
+                      </div>
+
+                      <div className="prov-input-group">
+                        <label>Usuario Instagram</label>
+                        <div className="prov-input-wrapper">
+                          <IonIcon icon={logoInstagram} className="input-icon" />
+                          <input type="text" name="instagram" placeholder="@usuario" value={formData.instagram} onChange={handleChange} />
+                        </div>
+                      </div>
+
+                      <div className="prov-input-group">
+                        <label>Usuario TikTok</label>
+                        <div className="prov-input-wrapper">
+                          <IonIcon icon={logoTiktok} className="input-icon" />
+                          <input type="text" name="tiktok" placeholder="@usuario" value={formData.tiktok} onChange={handleChange} />
+                        </div>
+                      </div>
+
+                      <div className="prov-input-group">
+                        <label>WhatsApp (Número)</label>
+                        <div className="prov-input-wrapper">
+                          <IonIcon icon={logoWhatsapp} className="input-icon" />
+                          <input type="text" name="whatsapp" placeholder="Ej. 521234567890" value={formData.whatsapp} onChange={handleChange} />
                         </div>
                       </div>
                     </div>

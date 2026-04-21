@@ -17,7 +17,11 @@ class Proveedor extends Model
         'password',
         'empresa',
         'telefono',
-        'direccion'
+        'direccion',
+        'facebook',
+        'instagram',
+        'tiktok',
+        'whatsapp'
     ];
 
     public function user()

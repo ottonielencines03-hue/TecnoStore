@@ -4,7 +4,7 @@ import {
   addOutline, checkmarkOutline, closeOutline, imageOutline,
   cartOutline, flashOutline, callOutline, chatbubblesOutline,
   cubeOutline, pricetagOutline, storefrontOutline, shieldCheckmarkOutline,
-  sparklesOutline
+  sparklesOutline, logoFacebook, logoInstagram, logoTiktok, logoWhatsapp
 } from 'ionicons/icons';
 import { useCart } from '../context/CartContext';
 import './ProductoCard.css';
@@ -88,6 +88,32 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
           )}
 
           <div className="pc-img-gradient" />
+
+          {/* Social Media Overlay */}
+          {proveedor && (
+            <div className="pc-social-overlay" onClick={e => e.stopPropagation()}>
+              {proveedor.facebook && (
+                <a href={proveedor.facebook} target="_blank" rel="noopener noreferrer" className="pc-social-link fb">
+                  <IonIcon icon={logoFacebook} />
+                </a>
+              )}
+              {proveedor.instagram && (
+                <a href={`https://instagram.com/${proveedor.instagram.replace('@','')}`} target="_blank" rel="noopener noreferrer" className="pc-social-link ig">
+                  <IonIcon icon={logoInstagram} />
+                </a>
+              )}
+              {proveedor.tiktok && (
+                <a href={`https://tiktok.com/${proveedor.tiktok.replace('@','')}`} target="_blank" rel="noopener noreferrer" className="pc-social-link tk">
+                  <IonIcon icon={logoTiktok} />
+                </a>
+              )}
+              {proveedor.whatsapp && (
+                <a href={`https://wa.me/${proveedor.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="pc-social-link wa">
+                  <IonIcon icon={logoWhatsapp} />
+                </a>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Cuerpo */}
@@ -244,6 +270,35 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
                       <div className="pdm-contact-chip">
                         <IonIcon icon={callOutline} style={{ color: c2 }} />
                         <span>{proveedor.telefono}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Modal Social Links - More Striking */}
+                  {proveedor && (proveedor.facebook || proveedor.instagram || proveedor.tiktok || proveedor.whatsapp) && (
+                    <div className="pdm-social-section">
+                      <p className="pdm-social-label">Conecta con el vendedor</p>
+                      <div className="pdm-prov-socials">
+                        {proveedor.facebook && (
+                          <a href={proveedor.facebook} target="_blank" rel="noopener noreferrer" className="pdm-social-btn fb" title="Facebook">
+                            <IonIcon icon={logoFacebook} />
+                          </a>
+                        )}
+                        {proveedor.instagram && (
+                          <a href={`https://instagram.com/${proveedor.instagram.replace('@','')}`} target="_blank" rel="noopener noreferrer" className="pdm-social-btn ig" title="Instagram">
+                            <IonIcon icon={logoInstagram} />
+                          </a>
+                        )}
+                        {proveedor.tiktok && (
+                          <a href={`https://tiktok.com/${proveedor.tiktok.replace('@','')}`} target="_blank" rel="noopener noreferrer" className="pdm-social-btn tk" title="TikTok">
+                            <IonIcon icon={logoTiktok} />
+                          </a>
+                        )}
+                        {proveedor.whatsapp && (
+                          <a href={`https://wa.me/${proveedor.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="pdm-social-btn wa" title="WhatsApp">
+                            <IonIcon icon={logoWhatsapp} />
+                          </a>
+                        )}
                       </div>
                     </div>
                   )}

@@ -77,6 +77,18 @@ class ProfileController extends Controller
                 if ($request->has('direccion')) {
                     $entity->direccion = trim($request->direccion);
                 }
+                if ($request->has('facebook')) {
+                    $entity->facebook = trim($request->facebook);
+                }
+                if ($request->has('instagram')) {
+                    $entity->instagram = trim($request->instagram);
+                }
+                if ($request->has('tiktok')) {
+                    $entity->tiktok = trim($request->tiktok);
+                }
+                if ($request->has('whatsapp')) {
+                    $entity->whatsapp = trim($request->whatsapp);
+                }
             }
 
             // Handle Avatar Upload

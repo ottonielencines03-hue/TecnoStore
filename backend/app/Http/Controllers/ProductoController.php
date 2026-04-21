@@ -10,7 +10,7 @@ class ProductoController extends Controller
     // Listar todos los productos
     public function index()
     {
-        return response()->json(Producto::all());
+        return response()->json(Producto::with('proveedor')->get());
     }
 
     // Productos por proveedor

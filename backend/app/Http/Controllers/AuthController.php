@@ -122,7 +122,7 @@ class AuthController extends Controller
     // ── NUEVO: Obtener proveedor por ID (para las tarjetas de productos) ──
     public function showProveedor($id)
     {
-        $proveedor = Proveedor::select('id', 'name', 'empresa', 'email', 'telefono', 'direccion')
+        $proveedor = Proveedor::select('id', 'name', 'empresa', 'email', 'telefono', 'direccion', 'facebook', 'instagram', 'tiktok', 'whatsapp')
             ->find($id);
 
         if (!$proveedor) {
