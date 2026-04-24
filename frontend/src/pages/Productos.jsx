@@ -29,6 +29,9 @@ const Productos = () => {
   const [showAuthAlert, setShowAuthAlert] = useState(false);
   const { cartItemCount, setIsCartOpen } = useCart();
 
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  const isProveedor = user && user.empresa !== undefined;
+
   // Set selected category from URL query param
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -115,15 +118,17 @@ const Productos = () => {
                 />
               </div>
 
-              <button 
-                className="pg-cart-btn" 
-                onClick={() => {
-                  if (requireAuth()) setIsCartOpen(true);
-                }}
-              >
-                <IonIcon icon={cartOutline} />
-                {cartItemCount > 0 && <span className="pg-cart-badge">{cartItemCount}</span>}
-              </button>
+              {!isProveedor && (
+                <button 
+                  className="pg-cart-btn" 
+                  onClick={() => {
+                    if (requireAuth()) setIsCartOpen(true);
+                  }}
+                >
+                  <IonIcon icon={cartOutline} />
+                  {cartItemCount > 0 && <span className="pg-cart-badge">{cartItemCount}</span>}
+                </button>
+              )}
             </div>
           </header>
 

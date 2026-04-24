@@ -7,16 +7,22 @@ use App\Models\Producto;
 
 class ProductoController extends Controller
 {
-    // Listar todos los productos
+    // Listar todos los productos (solo con stock > 0)
     public function index()
     {
-        return response()->json(Producto::with('proveedor')->get());
+        return response()->json(Producto::with('proveedor')->where('stock', '>', 0)->get());
     }
 
-    // Productos por proveedor
+    // Productos por proveedor (solo con stock > 0)
     public function byProveedor($proveedor_id)
     {
-        return response()->json(Producto::where('proveedor_id', $proveedor_id)->get());
+        return response()->json(Producto::where('proveedor_id', $proveedor_id)->where('stock', '>', 0)->get());
+    }
+
+    // Productos vendidos por proveedor (stock <= 0)
+    public function vendidosPorProveedor($proveedor_id)
+    {
+        return response()->json(Producto::where('proveedor_id', $proveedor_id)->where('stock', '<=', 0)->get());
     }
 
     // Crear un producto nuevo

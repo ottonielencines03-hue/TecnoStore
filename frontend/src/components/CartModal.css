@@ -609,3 +609,35 @@
   text-decoration: line-through;
   margin-bottom: -4px;
 }
+
+/* ── Processing Overlay ── */
+.cm-loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cm-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.cm-loading-content p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.cm-loading-content span {
+  font-size: 13px;
+  color: #64748b;
+}

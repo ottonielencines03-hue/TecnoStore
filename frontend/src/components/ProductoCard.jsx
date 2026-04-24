@@ -24,6 +24,9 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
   const [imgError, setImgError] = useState(false);
   const [added, setAdded] = useState(false);
   const { addToCart } = useCart();
+  
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  const isProveedor = user && user.empresa !== undefined;
 
   useEffect(() => {
     if (producto.proveedor_id) {
@@ -130,14 +133,16 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
             </div>
 
             <div className="pc-footer-actions">
-              <button
-                className="pc-add-btn-full"
-                style={{ background: `linear-gradient(135deg, #3b82f6, #1d4ed8)` }}
-                onClick={handleAdd}
-              >
-                <IonIcon icon={added ? checkmarkOutline : cartOutline} />
-                <span>{added ? '¡Agregado!' : 'Añadir'}</span>
-              </button>
+              {!isProveedor && (
+                <button
+                  className="pc-add-btn-full"
+                  style={{ background: `linear-gradient(135deg, #3b82f6, #1d4ed8)` }}
+                  onClick={handleAdd}
+                >
+                  <IonIcon icon={added ? checkmarkOutline : cartOutline} />
+                  <span>{added ? '¡Agregado!' : 'Añadir'}</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -321,15 +326,17 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
               <span className="pdm-cta-label">Total</span>
               <span className="pdm-cta-amount">{formattedPrice}</span>
             </div>
-            <button
-              className={`pdm-cta-btn ${producto.stock <= 0 ? 'pdm-cta-disabled' : ''} ${added ? 'pdm-cta-success' : ''}`}
-              onClick={() => { if (producto.stock > 0) handleAddFromModal(); }}
-              disabled={producto.stock <= 0}
-              style={!added ? { background: `linear-gradient(135deg, #3b82f6, #1d4ed8)`, boxShadow: `0 6px 24px rgba(59, 130, 246, 0.3)` } : {}}
-            >
-              <IonIcon icon={added ? checkmarkOutline : cartOutline} />
-              <span>{added ? '¡Agregado!' : (producto.stock > 0 ? 'Añadir al carrito' : 'Agotado')}</span>
-            </button>
+            {!isProveedor && (
+              <button
+                className={`pdm-cta-btn ${producto.stock <= 0 ? 'pdm-cta-disabled' : ''} ${added ? 'pdm-cta-success' : ''}`}
+                onClick={() => { if (producto.stock > 0) handleAddFromModal(); }}
+                disabled={producto.stock <= 0}
+                style={!added ? { background: `linear-gradient(135deg, #3b82f6, #1d4ed8)`, boxShadow: `0 6px 24px rgba(59, 130, 246, 0.3)` } : {}}
+              >
+                <IonIcon icon={added ? checkmarkOutline : cartOutline} />
+                <span>{added ? '¡Agregado!' : (producto.stock > 0 ? 'Añadir al carrito' : 'Agotado')}</span>
+              </button>
+            )}
           </div>
         </div>
       </IonModal>

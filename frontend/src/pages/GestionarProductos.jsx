@@ -26,6 +26,8 @@ const GestionarProductos = () => {
   const router = useIonRouter();
 
   const [productos, setProductos] = useState([]);
+  const [vendidos, setVendidos] = useState([]);
+  const [activeTab, setActiveTab] = useState("activos"); // "activos" or "vendidos"
   const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [editando, setEditando] = useState(null);
@@ -46,9 +48,15 @@ const GestionarProductos = () => {
        router.push('/login', 'back', 'replace');
        return;
     }
-    fetch(`http://localhost:8000/api/productos/proveedor/${user.id}`)
-      .then(r => r.json())
-      .then(data => { setProductos(data); setLoading(false); })
+    Promise.all([
+      fetch(`http://localhost:8000/api/productos/proveedor/${user.id}`).then(r => r.json()),
+      fetch(`http://localhost:8000/api/productos/vendidos/${user.id}`).then(r => r.json())
+    ])
+      .then(([activosData, vendidosData]) => {
+        setProductos(activosData);
+        setVendidos(vendidosData);
+        setLoading(false);
+      })
       .catch(() => setLoading(false));
   }, [router, user?.id]);
 
@@ -132,7 +140,8 @@ const GestionarProductos = () => {
     }
   };
 
-  const filtrados = productos.filter(p =>
+  const itemsAMostrar = activeTab === "activos" ? productos : vendidos;
+  const filtrados = itemsAMostrar.filter(p =>
     p.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
     p.categoria?.toLowerCase().includes(busqueda.toLowerCase()) ||
     p.marca?.toLowerCase().includes(busqueda.toLowerCase())
@@ -168,22 +177,39 @@ const GestionarProductos = () => {
           {/* MAIN */}
           <div className="gp-main">
             {/* Toolbar */}
-            <div className="gp-toolbar">
-              <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-                <div className="gp-searchwrap">
-                  <IonIcon icon={searchOutline} className="gp-searchico" />
-                  <input
-                    className="gp-search"
-                    type="text"
-                    placeholder="Buscar producto..."
-                    value={busqueda}
-                    onChange={e => setBusqueda(e.target.value)}
-                  />
-                </div>
+            <div className="gp-toolbar" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+              <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', borderBottom: '1px solid #e5e7eb', width: '100%', overflowX: 'auto' }}>
+                <button 
+                  onClick={() => setActiveTab("activos")} 
+                  style={{ background: 'none', border: 'none', padding: '8px 16px', borderBottom: activeTab === 'activos' ? '2px solid #4f46e5' : '2px solid transparent', color: activeTab === 'activos' ? '#4f46e5' : '#6b7280', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                >
+                  Productos Activos ({productos.length})
+                </button>
+                <button 
+                  onClick={() => setActiveTab("vendidos")}
+                  style={{ background: 'none', border: 'none', padding: '8px 16px', borderBottom: activeTab === 'vendidos' ? '2px solid #ef4444' : '2px solid transparent', color: activeTab === 'vendidos' ? '#ef4444' : '#6b7280', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                >
+                  Productos Vendidos ({vendidos.length})
+                </button>
               </div>
-              <span className="gp-count">
-                {loading ? "Cargando..." : `${filtrados.length} producto${filtrados.length !== 1 ? "s" : ""}`}
-              </span>
+
+              <div style={{ display:"flex", alignItems:"center", justifyContent: 'space-between', width: '100%' }}>
+                <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+                  <div className="gp-searchwrap">
+                    <IonIcon icon={searchOutline} className="gp-searchico" />
+                    <input
+                      className="gp-search"
+                      type="text"
+                      placeholder="Buscar producto..."
+                      value={busqueda}
+                      onChange={e => setBusqueda(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <span className="gp-count">
+                  {loading ? "Cargando..." : `${filtrados.length} producto${filtrados.length !== 1 ? "s" : ""}`}
+                </span>
+              </div>
             </div>
 
             {/* Content Card / Table */}
@@ -216,7 +242,7 @@ const GestionarProductos = () => {
                         <th>Descuento</th>
                         <th>Precio</th>
                         <th>Stock</th>
-                        <th style={{ textAlign:"center" }}>Acciones</th>
+                        {activeTab === "activos" && <th style={{ textAlign:"center" }}>Acciones</th>}
                       </tr>
                     </thead>
                     <tbody className="gp-tbody">
@@ -255,19 +281,21 @@ const GestionarProductos = () => {
                           </td>
                           <td>
                             <span className={`gp-badge ${p.stock > 10 ? 'badge-green' : p.stock > 0 ? 'badge-orange' : 'badge-red'}`}>
-                              {p.stock} uds
+                              {p.stock === 0 ? 'Agotado/Vendido' : `${p.stock} uds`}
                             </span>
                           </td>
-                          <td>
-                            <div style={{ display:"flex", gap:8, justifyContent:"center" }}>
-                              <button className="gp-actbtn gp-edit" onClick={() => abrirEdicion(p)} title="Editar">
-                                <IonIcon icon={pencilOutline} />
-                              </button>
-                              <button className="gp-actbtn gp-del" onClick={() => setEliminando(p)} title="Eliminar">
-                                <IonIcon icon={trashOutline} />
-                              </button>
-                            </div>
-                          </td>
+                          {activeTab === "activos" && (
+                            <td>
+                              <div style={{ display:"flex", gap:8, justifyContent:"center" }}>
+                                <button className="gp-actbtn gp-edit" onClick={() => abrirEdicion(p)} title="Editar">
+                                  <IonIcon icon={pencilOutline} />
+                                </button>
+                                <button className="gp-actbtn gp-del" onClick={() => setEliminando(p)} title="Eliminar">
+                                  <IonIcon icon={trashOutline} />
+                                </button>
+                              </div>
+                            </td>
+                          )}
                         </tr>
                       ))}
                     </tbody>

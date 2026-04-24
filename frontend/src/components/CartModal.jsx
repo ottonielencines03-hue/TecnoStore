@@ -9,6 +9,7 @@ import { useCart } from '../context/CartContext';
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import axios from 'axios';
 import ReceiptModal from './ReceiptModal';
+import { API_BASE_URL, BASE_URL } from '../config';
 import './CartModal.css';
 
 const CartModal = ({ isOpen: propIsOpen, onDismiss: propOnDismiss, onRequireAuth }) => {
@@ -24,6 +25,7 @@ const CartModal = ({ isOpen: propIsOpen, onDismiss: propOnDismiss, onRequireAuth
   const [orderResult, setOrderResult] = useState(null);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
   const [isPaypalLoading, setIsPaypalLoading] = useState(true);
+  const [isProcessingOrder, setIsProcessingOrder] = useState(false);
   const [{ isPending, isResolved, isRejected }] = usePayPalScriptReducer();
   const overlayRef = useRef(null);
 
@@ -108,7 +110,7 @@ const CartModal = ({ isOpen: propIsOpen, onDismiss: propOnDismiss, onRequireAuth
                   <div className="cm-item-img-wrap">
                     {item.imagen ? (
                       <img
-                        src={`http://localhost:8000/productos/${item.imagen}`}
+                        src={`${BASE_URL}/productos/${item.imagen}`}
                         alt={item.nombre}
                         className="cm-item-img"
                       />
@@ -138,7 +140,7 @@ const CartModal = ({ isOpen: propIsOpen, onDismiss: propOnDismiss, onRequireAuth
                     <div className="cm-item-bottom-row">
                       <div className="cm-item-price-wrap">
                         {item.descuento > 0 && <span className="cm-item-old-price">{formatPrice(item.precio)}</span>}
-                        <p className="cm-item-price" style={item.descuento > 0 ? { color: '#ef4444' } : {}}>
+                        <p className="cm-item-price" style={item.descuento > 0 ? { color: '#3b82f6' } : {}}>
                           {formatPrice(item.precio * (1 - (item.descuento || 0) / 100))}
                         </p>
                       </div>
@@ -246,31 +248,52 @@ const CartModal = ({ isOpen: propIsOpen, onDismiss: propOnDismiss, onRequireAuth
                   }}
                   onApprove={(data, actions) => {
                     return actions.order.capture().then(async (details) => {
+                      setIsProcessingOrder(true);
                       try {
                         const orderData = {
                           user_id: user?.id || 1,
                           paypal_id: details.id,
-                          total: cartTotal,
+                          total: Number(cartTotal.toFixed(2)),
                           items: cart.map(item => ({
                             producto_id: item.id,
                             cantidad: item.cantidad,
-                            precio_unitario: item.precio * (1 - (item.descuento || 0) / 100),
+                            precio_unitario: Number((item.precio * (1 - (item.descuento || 0) / 100)).toFixed(2)),
                           }))
                         };
 
-                        const response = await axios.post('http://localhost:8000/api/ordenes', orderData);
+                        const targetUrl = `${API_BASE_URL}/ordenes`;
+                        console.log("Enviando orden a:", targetUrl, orderData);
+                        const response = await fetch(targetUrl, {
+                          method: 'POST',
+                          headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                          },
+                          body: JSON.stringify(orderData)
+                        });
                         
-                        if (response.data.status === 'success') {
-                          setOrderResult(response.data.order);
+                        const data = await response.json();
+
+                        if (response.ok && data.status === 'success') {
+                          setOrderResult(data.orden);
                           setIsReceiptOpen(true);
                           clearCart();
                           setShowPaypal(false);
                           if (showToast) showToast('¡Compra realizada con éxito!', 'success');
+                        } else {
+                          console.error("Error del servidor (Respuesta no exitosa):", data);
+                          if (showToast) showToast(data.message || 'Error al registrar la orden.', 'danger');
                         }
                       } catch (error) {
-                        console.error("Error al guardar la orden:", error);
-                        if (showToast) showToast('Pago procesado, pero hubo un error al registrar la orden.', 'warning');
+                        console.error("ERROR DE RED O EXCEPCIÓN JS:", error);
+                        if (showToast) showToast('Error de conexión con el servidor. La orden no se pudo registrar.', 'danger');
+                      } finally {
+                        setIsProcessingOrder(false);
                       }
+                    }).catch(err => {
+                      console.error("Error al capturar el pago de PayPal:", err);
+                      if (showToast) showToast('Error al procesar el pago con PayPal.', 'danger');
+                      setIsProcessingOrder(false);
                     });
                   }}
                   onError={(err) => {
@@ -306,6 +329,16 @@ const CartModal = ({ isOpen: propIsOpen, onDismiss: propOnDismiss, onRequireAuth
           </div>
         )}
       </div>
+
+      {isProcessingOrder && (
+        <div className="cm-loading-overlay">
+          <div className="cm-loading-content">
+            <IonSpinner name="crescent" color="primary" />
+            <p>Procesando tu pedido...</p>
+            <span>No cierres esta ventana</span>
+          </div>
+        </div>
+      )}
 
       {isReceiptOpen && orderResult && (
         <ReceiptModal 

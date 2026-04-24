@@ -132,6 +132,7 @@ const PantallaInicio = () => {
   }, [allProducts]);
 
   const inicial = user?.name?.charAt(0).toUpperCase() ?? "?";
+  const isProveedor = user && user.empresa !== undefined;
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -165,12 +166,14 @@ const PantallaInicio = () => {
             </div>
 
             <div className="pi-nav-right">
-              <div className="pi-cart-btn" onClick={() => setIsCartOpen(true)}>
-                <IonIcon icon={cartOutline} style={{ fontSize: '20px' }} />
-                {cartItemCount > 0 && (
-                  <span className="pi-cart-badge">{cartItemCount}</span>
-                )}
-              </div>
+              {!isProveedor && (
+                <div className="pi-cart-btn" onClick={() => setIsCartOpen(true)}>
+                  <IonIcon icon={cartOutline} style={{ fontSize: '20px' }} />
+                  {cartItemCount > 0 && (
+                    <span className="pi-cart-badge">{cartItemCount}</span>
+                  )}
+                </div>
+              )}
 
               <div className="pi-avatar-btn" onClick={(e) => setPopoverState({ show: true, event: e.nativeEvent })}>
                 {user?.avatar ? (
@@ -326,9 +329,11 @@ const PantallaInicio = () => {
                                 {Number(discountedPrice).toLocaleString("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 })}
                               </span>
                             </div>
-                            <button className="pi-feat-add">
-                              <IonIcon icon={addOutline} style={{ fontSize: '20px' }} />
-                            </button>
+                            {!isProveedor && (
+                              <button className="pi-feat-add">
+                                <IonIcon icon={addOutline} style={{ fontSize: '20px' }} />
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -375,9 +380,11 @@ const PantallaInicio = () => {
                           <span className="pi-feat-price">
                             {Number(p.precio * (1 - (p.descuento || 0) / 100)).toLocaleString("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 })}
                           </span>
-                          <button className="pi-feat-add">
-                            <IonIcon icon={addOutline} style={{ fontSize: '20px' }} />
-                          </button>
+                          {!isProveedor && (
+                            <button className="pi-feat-add">
+                              <IonIcon icon={addOutline} style={{ fontSize: '20px' }} />
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>

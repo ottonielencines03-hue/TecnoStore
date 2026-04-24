@@ -12,16 +12,21 @@ class OrdenController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'total' => 'required|numeric',
-            'paypal_id' => 'required|string',
-            'metodo_pago' => 'string',
-            'items' => 'required|array',
-            'items.*.producto_id' => 'required|exists:productos,id',
-            'items.*.cantidad' => 'required|integer|min:1',
-            'items.*.precio_unitario' => 'required|numeric',
-        ]);
+        try {
+            $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'total' => 'required|numeric',
+                'paypal_id' => 'required|string',
+                'metodo_pago' => 'string',
+                'items' => 'required|array',
+                'items.*.producto_id' => 'required|exists:productos,id',
+                'items.*.cantidad' => 'required|integer|min:1',
+                'items.*.precio_unitario' => 'required|numeric',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed in OrdenController: ' . json_encode($e->errors()) . ' Request data: ' . json_encode($request->all()));
+            throw $e;
+        }
 
         try {
             DB::beginTransaction();
@@ -41,9 +46,20 @@ class OrdenController extends Controller
                     'cantidad' => $item['cantidad'],
                     'precio_unitario' => $item['precio_unitario'],
                 ]);
+
+                // Descontar stock
+                $producto = \App\Models\Producto::find($item['producto_id']);
+                if ($producto) {
+                    $producto->stock -= $item['cantidad'];
+                    if ($producto->stock < 0) {
+                        $producto->stock = 0;
+                    }
+                    $producto->save();
+                }
             }
 
             DB::commit();
+            Log::info('Orden creada exitosamente: ID ' . $orden->id . ' para el usuario ' . $orden->user_id);
 
             return response()->json([
                 'status' => 'success',

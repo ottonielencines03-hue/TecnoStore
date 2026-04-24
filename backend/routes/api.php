@@ -25,6 +25,7 @@ Route::get('/proveedores/{id}', [AuthController::class, 'showProveedor']);
 Route::get('/productos', [ProductoController::class, 'index']);
 Route::post('/productos', [ProductoController::class, 'store']);
 Route::get('/productos/proveedor/{proveedor_id}', [ProductoController::class, 'byProveedor']);
+Route::get('/productos/vendidos/{proveedor_id}', [ProductoController::class, 'vendidosPorProveedor']);
 Route::post('/productos/{id}', [ProductoController::class, 'update']);
 Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
 

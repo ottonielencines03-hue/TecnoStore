@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { API_BASE_URL } from '../config';
 import './Toast.css';
 
 const CartContext = createContext();
@@ -60,7 +61,9 @@ export const CartProvider = ({ children }) => {
   /* ── Fetch Cart ── */
   const fetchCart = useCallback(async (userId) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/carrito/${userId}`);
+      const response = await fetch(`${API_BASE_URL}/carrito/${userId}`, {
+        headers: { 'Accept': 'application/json' }
+      });
       if (response.ok) {
         const data = await response.json();
         setCart(data);
@@ -130,9 +133,12 @@ export const CartProvider = ({ children }) => {
 
     // Background sync with server
     try {
-      const response = await fetch('http://localhost:8000/api/carrito', {
+      const response = await fetch(`${API_BASE_URL}/carrito`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({
           user_id: user.id,
           producto_id: producto.id,
@@ -166,8 +172,9 @@ export const CartProvider = ({ children }) => {
     showToast('Producto eliminado del carrito', 'info');
 
     try {
-      const response = await fetch(`http://localhost:8000/api/carrito/${user.id}/${productoId}`, {
-        method: 'DELETE'
+      const response = await fetch(`${API_BASE_URL}/carrito/${user.id}/${productoId}`, {
+        method: 'DELETE',
+        headers: { 'Accept': 'application/json' }
       });
 
       if (!response.ok) {
@@ -202,9 +209,12 @@ export const CartProvider = ({ children }) => {
     );
 
     try {
-      const response = await fetch(`http://localhost:8000/api/carrito/${user.id}/${productoId}`, {
+      const response = await fetch(`${API_BASE_URL}/carrito/${user.id}/${productoId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({ cantidad: nuevaCantidad })
       });
 
@@ -233,8 +243,9 @@ export const CartProvider = ({ children }) => {
     showToast('Carrito vaciado', 'info');
 
     try {
-      const response = await fetch(`http://localhost:8000/api/carrito/${user.id}`, {
-        method: 'DELETE'
+      const response = await fetch(`${API_BASE_URL}/carrito/${user.id}`, {
+        method: 'DELETE',
+        headers: { 'Accept': 'application/json' }
       });
       if (!response.ok) {
         setCart(prevCart); // Rollback
