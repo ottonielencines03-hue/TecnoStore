@@ -12,8 +12,6 @@ import PerfilProveedor from './pages/PerfilProveedor';
 import Productos from './pages/Productos';
 import GestionarProductos from './pages/GestionarProductos';
 import MisPedidos from './pages/MisPedidos';
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
-
 /* Components */
 import CartModal from './components/CartModal';
 
@@ -27,32 +25,24 @@ setupIonicReact({
 
 const App = () => {
   return (
-    <PayPalScriptProvider options={{ 
-      "client-id": "AYoFooTFfuQrEQ-Y6QM9QZo4cY0k8cWbklcz4oxxWKkfbV2N_DwUvWNohsnB8lh161y-rw7eGfhgCy_U",
-      currency: "MXN",
-      intent: "capture",
-      debug: true,
-      components: "buttons"
-    }}>
-      <IonApp>
-        <CartProvider>
-          <IonReactRouter>
-            <IonRouterOutlet>
-              <Route exact path="/" component={Landing} />
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/PantallaInicio" component={PantallaInicio} />
-              <Route exact path="/proveedor" component={PanelProveedor} />
-              <Route exact path="/perfil-proveedor" component={PerfilProveedor} />
-              <Route exact path="/productos" component={Productos} />
-              <Route exact path="/gestionar-productos" component={GestionarProductos} />
-              <Route exact path="/mis-pedidos" component={MisPedidos} />
-              <Redirect to="/" />
-            </IonRouterOutlet>
-            <CartModal />
-          </IonReactRouter>
-        </CartProvider>
-      </IonApp>
-    </PayPalScriptProvider>
+    <IonApp>
+      <CartProvider>
+        <IonReactRouter>
+          <IonRouterOutlet>
+            <Route exact path="/" component={Landing} />
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/PantallaInicio" component={PantallaInicio} />
+            <Route exact path="/proveedor" component={PanelProveedor} />
+            <Route exact path="/perfil-proveedor" component={PerfilProveedor} />
+            <Route exact path="/productos" component={Productos} />
+            <Route exact path="/gestionar-productos" component={GestionarProductos} />
+            <Route exact path="/mis-pedidos" component={MisPedidos} />
+            <Redirect to="/" />
+          </IonRouterOutlet>
+          <CartModal />
+        </IonReactRouter>
+      </CartProvider>
+    </IonApp>
   );
 };
 

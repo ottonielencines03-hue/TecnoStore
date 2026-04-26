@@ -16,8 +16,8 @@ class OrdenController extends Controller
             $request->validate([
                 'user_id' => 'required|exists:users,id',
                 'total' => 'required|numeric',
-                'paypal_id' => 'required|string',
-                'metodo_pago' => 'string',
+                'paypal_id' => 'nullable|string',
+                'metodo_pago' => 'nullable|string',
                 'items' => 'required|array',
                 'items.*.producto_id' => 'required|exists:productos,id',
                 'items.*.cantidad' => 'required|integer|min:1',
@@ -34,8 +34,8 @@ class OrdenController extends Controller
             $orden = Orden::create([
                 'user_id' => $request->user_id,
                 'total' => $request->total,
-                'paypal_id' => $request->paypal_id,
-                'metodo_pago' => $request->metodo_pago ?? 'PayPal',
+                'paypal_id' => $request->paypal_id ?? 'TEST-' . time(),
+                'metodo_pago' => $request->metodo_pago ?? 'Tarjeta de Prueba',
                 'status' => 'completado',
             ]);
 
