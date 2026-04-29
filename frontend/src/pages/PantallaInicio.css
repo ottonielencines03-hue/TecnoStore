@@ -1275,9 +1275,9 @@ ion-popover.user-menu-popover {
 
 .pi-prods-track-container {
   overflow-x: auto;
-  scroll-behavior: smooth;
   margin: 0 -80px;
   padding: 20px 80px 40px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .pi-prods-track-container::-webkit-scrollbar {

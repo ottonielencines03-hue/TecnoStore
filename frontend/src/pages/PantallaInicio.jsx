@@ -305,6 +305,9 @@ const PantallaInicio = () => {
                 ref={dealsTrackRef}
                 onMouseEnter={() => setHoverDeals(true)}
                 onMouseLeave={() => setHoverDeals(false)}
+                onTouchStart={() => setHoverDeals(true)}
+                onTouchEnd={() => setHoverDeals(false)}
+                onTouchCancel={() => setHoverDeals(false)}
               >
                 <div className="pi-prods-track">
                   {allProducts.filter(p => p.descuento > 0).map((p, i) => {
@@ -358,6 +361,9 @@ const PantallaInicio = () => {
               ref={prodsTrackRef}
               onMouseEnter={() => setHoverProds(true)}
               onMouseLeave={() => setHoverProds(false)}
+              onTouchStart={() => setHoverProds(true)}
+              onTouchEnd={() => setHoverProds(false)}
+              onTouchCancel={() => setHoverProds(false)}
             >
               <div className="pi-prods-track">
                 {loading ? (
