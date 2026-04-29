@@ -64,7 +64,7 @@ const ClientSettingsModal = ({ isOpen, onDismiss, user, onUpdateUser }) => {
       }
 
       if (user.avatar) {
-        setPreviewImage(`http://localhost:8000/avatars/${user.avatar}`);
+        setPreviewImage(`https://tecnostore-production.up.railway.app/avatars/${user.avatar}`);
       }
     }
   }, [user, isOpen]);
@@ -134,7 +134,7 @@ const ClientSettingsModal = ({ isOpen, onDismiss, user, onUpdateUser }) => {
       }
       form.append("ajustes", JSON.stringify(ajustes));
 
-      const res = await fetch(`http://localhost:8000/api/perfil/cliente/${user.id}`, {
+      const res = await fetch(`https://tecnostore-production.up.railway.app/api/perfil/cliente/${user.id}`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json'

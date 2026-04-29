@@ -49,8 +49,8 @@ const GestionarProductos = () => {
        return;
     }
     Promise.all([
-      fetch(`http://localhost:8000/api/productos/proveedor/${user.id}`).then(r => r.json()),
-      fetch(`http://localhost:8000/api/productos/vendidos/${user.id}`).then(r => r.json())
+      fetch(`https://tecnostore-production.up.railway.app/api/productos/proveedor/${user.id}`).then(r => r.json()),
+      fetch(`https://tecnostore-production.up.railway.app/api/productos/vendidos/${user.id}`).then(r => r.json())
     ])
       .then(([activosData, vendidosData]) => {
         setProductos(activosData);
@@ -92,7 +92,7 @@ const GestionarProductos = () => {
       if (form.tarjeta_pago) fd.append("tarjeta_pago", form.tarjeta_pago);
       if (nuevaImagen) fd.append("imagen", nuevaImagen);
 
-      const res = await fetch(`http://localhost:8000/api/productos/${editando.id}`, {
+      const res = await fetch(`https://tecnostore-production.up.railway.app/api/productos/${editando.id}`, {
         method: "POST", // Laravel accepts POST for FormData with files + _method inside but mostly just POST works for update in this specific API structure
         body: fd,
       });
@@ -121,7 +121,7 @@ const GestionarProductos = () => {
   const confirmarEliminar = async () => {
     setEliminandoId(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/productos/${eliminando.id}`, {
+      const res = await fetch(`https://tecnostore-production.up.railway.app/api/productos/${eliminando.id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Error al eliminar");
@@ -251,7 +251,7 @@ const GestionarProductos = () => {
                           <td>
                             <div style={{ display:"flex", alignItems:"center", gap:12 }}>
                               {p.imagen
-                                ? <img src={`http://localhost:8000/productos/${p.imagen}`} alt={p.nombre} className="gp-thumb" />
+                                ? <img src={`https://tecnostore-production.up.railway.app/productos/${p.imagen}`} alt={p.nombre} className="gp-thumb" />
                                 : <div className="gp-thumb-placeholder"><IonIcon icon={imageOutline} style={{ fontSize:'24px' }}/></div>
                               }
                               <div>
@@ -374,7 +374,7 @@ const GestionarProductos = () => {
                   <div className="gp-mfield gp-mspan">
                     <label className="gp-mlabel">Imagen (dejar vacío para mantener la actual)</label>
                     {editando.imagen && (
-                      <img src={`http://localhost:8000/productos/${editando.imagen}`}
+                      <img src={`https://tecnostore-production.up.railway.app/productos/${editando.imagen}`}
                         alt="actual" style={{ width:80, height:80, objectFit:"cover", borderRadius:10, marginBottom:8, border:"1px solid rgba(99,102,241,.15)" }} />
                     )}
                     <input type="file" accept="image/*" className="gp-mfileinput"

@@ -15,7 +15,7 @@ const Navbar = () => {
   useEffect(() => {
     const u = JSON.parse(localStorage.getItem('user'));
     setUser(u);
-    fetch('http://localhost:8000/api/categorias')
+    fetch('https://tecnostore-production.up.railway.app/api/categorias')
       .then(res => res.json())
       .then(data => setCategories(data))
       .catch(console.error);
@@ -63,7 +63,7 @@ const Navbar = () => {
         {user ? (
           <div className="avatar-btn" onClick={() => router.push('/perfil-proveedor')}>
             {user.avatar ? (
-              <img src={`http://localhost:8000/avatars/${user.avatar}`} alt="Avatar" className="avatar-img" />
+              <img src={`https://tecnostore-production.up.railway.app/avatars/${user.avatar}`} alt="Avatar" className="avatar-img" />
             ) : (
               <div className="avatar-placeholder">{user.name?.charAt(0).toUpperCase() ?? '?'}</div>
             )}

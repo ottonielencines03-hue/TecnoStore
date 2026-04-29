@@ -30,7 +30,7 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
 
   useEffect(() => {
     if (producto.proveedor_id) {
-      fetch(`http://localhost:8000/api/proveedores/${producto.proveedor_id}`)
+      fetch(`https://tecnostore-production.up.railway.app/api/proveedores/${producto.proveedor_id}`)
         .then(r => r.json())
         .then(setProveedor)
         .catch(console.error);
@@ -69,7 +69,7 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
     }
   };
 
-  const imgSrc = `http://localhost:8000/productos/${producto.imagen}`;
+  const imgSrc = `https://tecnostore-production.up.railway.app/productos/${producto.imagen}`;
 
   return (
     <div className="pc-root" style={{ animationDelay: `${index * 0.06}s` }}>
@@ -152,7 +152,7 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
           {proveedor ? (
             <>
               {proveedor.avatar ? (
-                <img src={`http://localhost:8000/avatars/${proveedor.avatar}`} alt={proveedor.name} className="pc-prov-avatar-img" />
+                <img src={`https://tecnostore-production.up.railway.app/avatars/${proveedor.avatar}`} alt={proveedor.name} className="pc-prov-avatar-img" />
               ) : (
                 <div className="pc-prov-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                   {provIni}
@@ -263,7 +263,7 @@ const ProductoCard = ({ producto, index = 0, onRequireAuth }) => {
                 <div className="pdm-prov-card">
                   <div className="pdm-prov-top">
                     {proveedor && proveedor.avatar ? (
-                      <img src={`http://localhost:8000/avatars/${proveedor.avatar}`} alt={proveedor.name} className="pdm-prov-avatar-img" />
+                      <img src={`https://tecnostore-production.up.railway.app/avatars/${proveedor.avatar}`} alt={proveedor.name} className="pdm-prov-avatar-img" />
                     ) : (
                       <div className="pdm-prov-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                         {provIni}

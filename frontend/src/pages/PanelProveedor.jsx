@@ -96,7 +96,7 @@ const PanelProveedor = () => {
     setProveedor(user);
 
     // Fetch Stats
-    fetch(`http://localhost:8000/api/stats/proveedor/${user.id}`)
+    fetch(`https://tecnostore-production.up.railway.app/api/stats/proveedor/${user.id}`)
       .then(res => res.json())
       .then(data => {
         setStats(data);
@@ -108,7 +108,7 @@ const PanelProveedor = () => {
       });
 
     // Fetch Global Stats
-    fetch("http://localhost:8000/api/stats")
+    fetch("https://tecnostore-production.up.railway.app/api/stats")
       .then(res => res.json())
       .then(data => setGlobalStats(data))
       .catch(err => console.error("Error fetching global stats:", err));
@@ -160,7 +160,7 @@ const PanelProveedor = () => {
         formData.append("imagen", producto.imagen);
       }
 
-      const res = await fetch("http://localhost:8000/api/productos", {
+      const res = await fetch("https://tecnostore-production.up.railway.app/api/productos", {
         method: "POST",
         body: formData,
       });
@@ -234,7 +234,7 @@ const PanelProveedor = () => {
               {/* PERFIL */}
               <div className="pp-avbtn" onClick={(e) => setPopoverState({ show: true, event: e.nativeEvent })}>
                 {proveedor?.avatar ? (
-                    <img src={`http://localhost:8000/avatars/${proveedor.avatar}`} alt="Avatar" className="pp-av-img" />
+                    <img src={`https://tecnostore-production.up.railway.app/avatars/${proveedor.avatar}`} alt="Avatar" className="pp-av-img" />
                 ) : (
                     <div className="pp-av">{inicial}</div>
                 )}
@@ -352,7 +352,7 @@ const PanelProveedor = () => {
               <div className="pp-card pp-profile-card">
                 <div className="pp-profile-header">
                   {proveedor?.avatar ? (
-                    <img src={`http://localhost:8000/avatars/${proveedor.avatar}`} alt="Avatar" className="pp-avlg-img" />
+                    <img src={`https://tecnostore-production.up.railway.app/avatars/${proveedor.avatar}`} alt="Avatar" className="pp-avlg-img" />
                   ) : (
                     <div className="pp-avlg">{inicial}</div>
                   )}

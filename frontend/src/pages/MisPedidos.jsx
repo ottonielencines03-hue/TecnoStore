@@ -42,7 +42,7 @@ const MisPedidos = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/ordenes/usuario/${user.id}`);
+      const response = await axios.get(`https://tecnostore-production.up.railway.app/api/ordenes/usuario/${user.id}`);
       if (response.data.status === 'success') {
         setOrders(response.data.ordenes);
       }

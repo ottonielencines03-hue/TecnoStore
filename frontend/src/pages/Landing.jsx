@@ -81,7 +81,7 @@ const PCard = ({ p, idx, user, onRequireAuth }) => {
     >
       <div className="ld-pcard-img">
         {p.imagen ? (
-          <img src={`http://localhost:8000/productos/${p.imagen}`} alt={p.nombre} loading="lazy" />
+          <img src={`https://tecnostore-production.up.railway.app/productos/${p.imagen}`} alt={p.nombre} loading="lazy" />
         ) : (
           <div className="ld-pcard-placeholder">
             <img src="/Logo-TecnoStore.png" alt="TecnoStore Logo" style={{ width: '50px', height: '50px', opacity: 0.4 }} />
@@ -137,13 +137,13 @@ const Landing = () => {
     if (u) setUser(u);
 
     // Fetch stats
-    fetch("http://localhost:8000/api/stats")
+    fetch("https://tecnostore-production.up.railway.app/api/stats")
       .then(res => res.json())
       .then(setStats)
       .catch(console.error);
 
     // Fetch real products
-    fetch("http://localhost:8000/api/productos")
+    fetch("https://tecnostore-production.up.railway.app/api/productos")
       .then(res => res.json())
       .then(data => {
         setRealProducts(data.slice(0, 8)); // Display first 8 products
@@ -256,7 +256,7 @@ const Landing = () => {
                   {realProducts.length > 0 ? (
                     <>
                       <img
-                        src={`http://localhost:8000/productos/${realProducts[heroImg].imagen}`}
+                        src={`https://tecnostore-production.up.railway.app/productos/${realProducts[heroImg].imagen}`}
                         alt={realProducts[heroImg].nombre}
                         key={heroImg}
                         className="ld-mockup-img"

@@ -39,7 +39,7 @@ const Login = () => {
       setForm(prev => ({ ...prev, rol: 'proveedor' }));
     }
 
-    fetch("http://localhost:8000/api/stats")
+    fetch("https://tecnostore-production.up.railway.app/api/stats")
       .then(res => res.json())
       .then(data => {
         setPlatformStats({
@@ -66,11 +66,11 @@ const Login = () => {
 
     const url = isLogin
       ? form.rol === "proveedor"
-        ? "http://localhost:8000/api/login-proveedor"
-        : "http://localhost:8000/api/login"
+        ? "https://tecnostore-production.up.railway.app/api/login-proveedor"
+        : "https://tecnostore-production.up.railway.app/api/login"
       : form.rol === "proveedor"
-        ? "http://localhost:8000/api/register-proveedor"
-        : "http://localhost:8000/api/register";
+        ? "https://tecnostore-production.up.railway.app/api/register-proveedor"
+        : "https://tecnostore-production.up.railway.app/api/register";
 
     const cleanEmail = form.email.trim();
     const cleanPassword = form.password.trim();

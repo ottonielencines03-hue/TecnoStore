@@ -100,13 +100,13 @@ const PantallaInicio = () => {
     setUser(u);
 
     // Fetch Real Stats
-    fetch("http://localhost:8000/api/stats")
+    fetch("https://tecnostore-production.up.railway.app/api/stats")
       .then(res => res.json())
       .then(data => setRealStats(data))
       .catch(console.error);
 
     // Fetch Products
-    fetch("http://localhost:8000/api/productos")
+    fetch("https://tecnostore-production.up.railway.app/api/productos")
       .then(res => res.json())
       .then(data => {
         setAllProducts(data);
@@ -177,7 +177,7 @@ const PantallaInicio = () => {
 
               <div className="pi-avatar-btn" onClick={(e) => setPopoverState({ show: true, event: e.nativeEvent })}>
                 {user?.avatar ? (
-                  <img src={`http://localhost:8000/avatars/${user.avatar}`} alt="Avatar" className="pi-avatar-img" />
+                  <img src={`https://tecnostore-production.up.railway.app/avatars/${user.avatar}`} alt="Avatar" className="pi-avatar-img" />
                 ) : (
                   <div className="pi-avatar">{inicial}</div>
                 )}
@@ -234,7 +234,7 @@ const PantallaInicio = () => {
                       key={p.id} 
                       className={`pi-carousel-slide ${i === carouselIdx ? 'active' : ''}`}
                     >
-                      <img src={`http://localhost:8000/productos/${p.imagen}`} alt={p.nombre} />
+                      <img src={`https://tecnostore-production.up.railway.app/productos/${p.imagen}`} alt={p.nombre} />
                       <div className="pi-carousel-info">
                         <h3 className="pi-info-name">{p.nombre}</h3>
                         <p className="pi-info-price">
@@ -312,7 +312,7 @@ const PantallaInicio = () => {
                     return (
                       <div key={i} className="pi-feat-card pi-carousel-card" onClick={() => router.push("/productos")}>
                         <div className="pi-feat-img">
-                          <img src={`http://localhost:8000/productos/${p.imagen}`} alt={p.nombre} loading="lazy" />
+                          <img src={`https://tecnostore-production.up.railway.app/productos/${p.imagen}`} alt={p.nombre} loading="lazy" />
                           <div className="pi-feat-img-overlay" />
                           <span className="pi-feat-badge" style={{ background: '#ef4444', border: '1px solid #fecaca', color: '#fff', fontWeight: 800 }}>
                             -{p.descuento}% OFF
@@ -366,7 +366,7 @@ const PantallaInicio = () => {
                   allProducts.map((p, i) => (
                     <div key={i} className="pi-feat-card pi-carousel-card" onClick={() => router.push("/productos")}>
                       <div className="pi-feat-img">
-                        <img src={`http://localhost:8000/productos/${p.imagen}`} alt={p.nombre} loading="lazy" />
+                        <img src={`https://tecnostore-production.up.railway.app/productos/${p.imagen}`} alt={p.nombre} loading="lazy" />
                         <div className="pi-feat-img-overlay" />
                         {p.descuento > 0 && (
                            <span className="pi-feat-badge" style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444' }}>

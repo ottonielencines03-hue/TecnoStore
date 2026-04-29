@@ -42,10 +42,10 @@ import { BASE_URL, API_BASE_URL } from './config';
 const originalFetch = window.fetch;
 window.fetch = function() {
   if (typeof arguments[0] === 'string') {
-    if (arguments[0].startsWith('http://localhost:8000/api')) {
-      arguments[0] = arguments[0].replace('http://localhost:8000/api', API_BASE_URL);
-    } else if (arguments[0].startsWith('http://localhost:8000')) {
-      arguments[0] = arguments[0].replace('http://localhost:8000', BASE_URL);
+    if (arguments[0].startsWith('https://tecnostore-production.up.railway.app/api')) {
+      arguments[0] = arguments[0].replace('https://tecnostore-production.up.railway.app/api', API_BASE_URL);
+    } else if (arguments[0].startsWith('https://tecnostore-production.up.railway.app')) {
+      arguments[0] = arguments[0].replace('https://tecnostore-production.up.railway.app', BASE_URL);
     }
   }
   return originalFetch.apply(this, arguments);
@@ -54,10 +54,10 @@ window.fetch = function() {
 // Interceptar llamadas de Axios
 axios.interceptors.request.use(config => {
   if (config.url) {
-    if (config.url.startsWith('http://localhost:8000/api')) {
-      config.url = config.url.replace('http://localhost:8000/api', API_BASE_URL);
-    } else if (config.url.startsWith('http://localhost:8000')) {
-      config.url = config.url.replace('http://localhost:8000', BASE_URL);
+    if (config.url.startsWith('https://tecnostore-production.up.railway.app/api')) {
+      config.url = config.url.replace('https://tecnostore-production.up.railway.app/api', API_BASE_URL);
+    } else if (config.url.startsWith('https://tecnostore-production.up.railway.app')) {
+      config.url = config.url.replace('https://tecnostore-production.up.railway.app', BASE_URL);
     }
   }
   return config;

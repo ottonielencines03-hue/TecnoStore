@@ -51,7 +51,7 @@ const Productos = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/productos")
+    fetch("https://tecnostore-production.up.railway.app/api/productos")
       .then(r => r.json())
       .then(data => {
         setProductos(data);

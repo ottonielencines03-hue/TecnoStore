@@ -97,7 +97,7 @@ const PerfilProveedor = () => {
       }
 
       if (data.avatar) {
-        setPreviewImage(`http://localhost:8000/avatars/${data.avatar}`);
+        setPreviewImage(`https://tecnostore-production.up.railway.app/avatars/${data.avatar}`);
       }
       setLoading(false);
     }
@@ -175,7 +175,7 @@ const PerfilProveedor = () => {
       }
       form.append("ajustes", JSON.stringify(ajustes));
 
-      const res = await fetch(`http://localhost:8000/api/perfil/proveedor/${proveedor.id}`, {
+      const res = await fetch(`https://tecnostore-production.up.railway.app/api/perfil/proveedor/${proveedor.id}`, {
         method: 'POST',
         body: form
       });
