@@ -188,7 +188,7 @@ const Landing = () => {
           <nav className="ld-nav">
             <div className="ld-nav-logo" style={{ gap: '15px', height: '100%', display: 'flex', alignItems: 'center' }}>
               <img src="/Logo-TecnoStore.png" alt="TecnoStore Logo" style={{ width: '110px', height: '110px', objectFit: 'contain' }} />
-              TecnoStore
+              <span>TecnoStore</span>
             </div>
             <div className="ld-nav-links">
               <button className="ld-nav-link" onClick={() => router.push("/productos")}>Catálogo</button>
