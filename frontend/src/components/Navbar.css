@@ -150,3 +150,17 @@
   margin-right: 0.4rem;
   font-weight: 600;
 }
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.8rem 1rem;
+    gap: 8px;
+  }
+  .navbar-links {
+    display: none;
+  }
+  .navbar-brand {
+    font-size: 1.1rem;
+  }
+}
+

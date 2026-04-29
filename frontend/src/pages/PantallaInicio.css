@@ -9,7 +9,8 @@
   min-height: 100vh;
   background: #050810;
   color: #e2e8f0;
-  overflow-x: hidden;
+  overflow-x: clip;
+  width: 100%;
   position: relative;
 }
 
@@ -133,7 +134,14 @@
 
 @media (max-width: 768px) {
   .pi-nav {
-    padding: 0 20px;
+    padding: 0 16px;
+    gap: 12px;
+  }
+  .pi-nav-brand {
+    display: none;
+  }
+  .pi-avatar-name {
+    display: none;
   }
 }
 
