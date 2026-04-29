@@ -34,6 +34,35 @@ import './theme/variables.css';
 import './index.css';
 
 const container = document.getElementById('root');
+
+import axios from 'axios';
+import { BASE_URL, API_BASE_URL } from './config';
+
+// Interceptar llamadas de Fetch para cambiar automáticamente localhost al servidor en producción
+const originalFetch = window.fetch;
+window.fetch = function() {
+  if (typeof arguments[0] === 'string') {
+    if (arguments[0].startsWith('http://localhost:8000/api')) {
+      arguments[0] = arguments[0].replace('http://localhost:8000/api', API_BASE_URL);
+    } else if (arguments[0].startsWith('http://localhost:8000')) {
+      arguments[0] = arguments[0].replace('http://localhost:8000', BASE_URL);
+    }
+  }
+  return originalFetch.apply(this, arguments);
+};
+
+// Interceptar llamadas de Axios
+axios.interceptors.request.use(config => {
+  if (config.url) {
+    if (config.url.startsWith('http://localhost:8000/api')) {
+      config.url = config.url.replace('http://localhost:8000/api', API_BASE_URL);
+    } else if (config.url.startsWith('http://localhost:8000')) {
+      config.url = config.url.replace('http://localhost:8000', BASE_URL);
+    }
+  }
+  return config;
+});
+
 const root = createRoot(container);
 root.render(
   <React.StrictMode>
