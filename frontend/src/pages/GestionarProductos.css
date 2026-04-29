@@ -10,7 +10,7 @@
   background: #050810;
   color: #e2e8f0;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Background Effects */
@@ -54,8 +54,18 @@
 }
 
 .gp-header-inner {
-  max-width: 1200px; margin: 0 auto; padding: 14px 28px;
+  max-width: 1200px; margin: 0 auto; padding: 14px 16px;
   display: flex; align-items: center; justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+  .gp-htitle, .gp-hsub {
+    display: none;
+  }
+  .gp-header-inner {
+    padding: 12px 14px;
+    gap: 10px;
+  }
 }
 
 .gp-htitle { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: #fff; margin: 0; letter-spacing: -.02em; }

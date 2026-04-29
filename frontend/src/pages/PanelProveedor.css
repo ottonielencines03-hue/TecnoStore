@@ -10,7 +10,7 @@
   background: #050810;
   color: #e2e8f0;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Background Effects */
@@ -57,8 +57,18 @@
 
 .pp-header-inner {
   max-width: 1200px; margin: 0 auto;
-  padding: 14px 28px;
+  padding: 14px 16px;
   display: flex; align-items: center; justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+  .pp-header-inner {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  .pp-htitle, .pp-hsub, .pp-avname {
+    display: none;
+  }
 }
 
 .pp-header-logo { display: flex; align-items: center; gap: 14px; cursor: pointer; }
