@@ -6,6 +6,6 @@ export const isLocalhost = Boolean(
 
 export const BASE_URL = isLocalhost
   ? 'http://127.0.0.1:8000'
-  : 'https://tecnostore-production-7007.up.railway.app';
+  : 'https://tecnostore-production.up.railway.app';
 
 export const API_BASE_URL = `${BASE_URL}/api`;
